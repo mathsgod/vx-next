@@ -1,3 +1,12 @@
+<script setup>
+import "../assets/css/plugins/extensions/ext-component-tree.css";
+import "../assets/css/pages/app-file-manager.css";
+import PerfectScrollbar from "perfect-scrollbar";
+import VxFileManagerFile from "./vx-file-manager-file.vue";
+import VxFileManagerFolder from "./vx-file-manager-folder.vue";
+import feather from "feather-icons";
+import VxFileManagerLabels from "./vx-file-manager-labels.vue";
+</script>
 <template>
   <div class="file-manager-application vx-file-manager">
     <div class="content-area-wrapper vx-file-manager-content">
@@ -6,31 +15,48 @@
           <div class="sidebar-file-manager" :class="{ show: showSidebar }">
             <div class="sidebar-inner">
               <!-- sidebar menu links starts -->
-              <!-- add file button -->
-              <el-dropdown
-                class="w-100 pl-2 pt-2 pr-2 mb-2"
-                @command="addNew"
-                trigger="click"
-              >
-                <el-button
-                  type="primary"
-                  class="w-100"
-                  :disabled="type != null"
-                >
-                  Add New
-                </el-button>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item
-                    command="folder"
-                    v-t="'Folder'"
-                  ></el-dropdown-item>
-                  <el-dropdown-item
-                    command="file"
-                    v-t="'File'"
-                  ></el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
 
+              <!-- add file button -->
+              <div class="dropdown dropdown-actions">
+                <button
+                  class="btn btn-primary add-file-btn text-center w-100"
+                  type="button"
+                  id="addNewFile"
+                  data-bs-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="true"
+                >
+                  <span class="align-middle">Add New</span>
+                </button>
+                <div class="dropdown-menu" aria-labelledby="addNewFile">
+                  <div class="dropdown-item" @click="addNew('folder')">
+                    <div class="mb-0">
+                      <i data-feather="folder" class="me-25"></i>
+                      <span class="align-middle">Folder</span>
+                    </div>
+                  </div>
+                  <div class="dropdown-item" @click="addNew('file')">
+                    <div class="mb-0" for="file-upload">
+                      <i data-feather="upload-cloud" class="me-25"></i>
+                      <span class="align-middle">File Upload</span>
+                      <input type="file" id="file-upload" hidden />
+                    </div>
+                  </div>
+                  <!-- div class="dropdown-item">
+                    <div for="folder-upload" class="mb-0">
+                      <i data-feather="upload-cloud" class="me-25"></i>
+                      <span class="align-middle">Folder Upload</span>
+                      <input
+                        type="file"
+                        id="folder-upload"
+                        webkitdirectory
+                        mozdirectory
+                        hidden
+                      />
+                    </div >
+                  </div -->
+                </div>
+              </div>
               <!-- add file button ends -->
 
               <!-- sidebar list items starts  -->
@@ -60,12 +86,12 @@
                   <span class="align-middle">Recents</span>
                 </a>
 
-                <vx-file-manager-labels
+                <VxFileManagerLabels
                   :default-action="defaultAction"
                   :file-type="fileType"
                   :value="type"
                   @input="listFiles($event)"
-                ></vx-file-manager-labels>
+                ></VxFileManagerLabels>
 
                 <!-- links for file manager sidebar ends -->
 
@@ -152,7 +178,7 @@
                     <input
                       type="text"
                       class="form-control files-filter border-0 bg-transparent"
-                      :placeholder="$t('Search')"
+                      placeholder="Search"
                       @keyup="onSearch($event)"
                       v-model="search_text"
                     />
@@ -212,9 +238,12 @@
                     <div class="el-upload__text">
                       Drop file here or <em>click to upload</em>
                     </div>
-                    <div class="el-upload__tip" slot="tip">
-                      Files with a size less than {{ $vx.file_upload_max_size }}
-                    </div>
+                    <template #tip>
+                      <div class="el-upload__tip">
+                        Files with a size less than
+                        {{ file_upload_max_size }}
+                      </div>
+                    </template>
                   </el-upload>
 
                   <el-divider></el-divider>
@@ -277,7 +306,7 @@
                     </div>
                   </div>
 
-                  <vx-file-manager-folder
+                  <VxFileManagerFolder
                     v-for="(folder, index) in folders"
                     :key="index"
                     :folder="folder"
@@ -286,7 +315,7 @@
                     @unselected="unselectFolder($event)"
                     @rename="renameFolder($event)"
                     @input="folderClicked($event)"
-                  ></vx-file-manager-folder>
+                  ></VxFileManagerFolder>
 
                   <div
                     class="flex-grow-1 align-items-center no-result mb-3"
@@ -305,7 +334,7 @@
                 >
                   <h6 class="files-section-title mt-2 mb-75">Files</h6>
 
-                  <vx-file-manager-file
+                  <VxFileManagerFile
                     :mode="mode"
                     v-for="f in files"
                     :key="f.path"
@@ -318,7 +347,7 @@
                       selectedFile = selectedFile.filter((s) => s != $event)
                     "
                     @input="inputFile($event)"
-                  ></vx-file-manager-file>
+                  ></VxFileManagerFile>
 
                   <div
                     class="flex-grow-1 align-items-center no-result mb-3"
@@ -336,11 +365,7 @@
         </div>
       </div>
     </div>
-    <el-dialog
-      v-if="showSelectFolder"
-      title="Select folder ..."
-      :visible.sync="showSelectFolder"
-    >
+    <el-dialog v-model="showSelectFolder" title="Select folder ...">
       <el-tree
         ref="tree2"
         lazy
@@ -367,21 +392,7 @@
 </style>
 
 <script>
-import "../assets/css/plugins/extensions/ext-component-tree.css";
-import "../assets/css/pages/app-file-manager.css";
-import PerfectScrollbar from "perfect-scrollbar";
-import VxFileManagerFile from "./vx-file-manager-file.vue";
-import VxFileManagerFolder from "./vx-file-manager-folder.vue";
-import feather from "feather-icons";
-import VxFileManagerLabels from "./vx-file-manager-labels.vue";
-
 export default {
-  name: "vx-file-manager",
-  components: {
-    "vx-file-manager-file": VxFileManagerFile,
-    "vx-file-manager-folder": VxFileManagerFolder,
-    VxFileManagerLabels,
-  },
   props: {
     base: {
       type: String,
@@ -413,14 +424,14 @@ export default {
       type: null,
       search_text: "",
       nextSelectedFiles: [],
+      file_upload_max_size: "",
     };
   },
   created() {
     this.reloadContent();
-    this.action = this.$vx.endpoint + "FileManager/uploadFile";
-    this.uploadHeaders = {
-      Authorization: "Bearer " + this.$vx.accessToken,
-    };
+    this.action = vx.endpoint + "FileManager/uploadFile";
+    this.uploadHeaders = {};
+    this.file_upload_max_size = vx.file_upload_max_size;
   },
   mounted() {
     new PerfectScrollbar(this.$refs.fileContent);
@@ -462,7 +473,7 @@ export default {
       this.showSelectFolder = false;
 
       for (let file of this.selectedFile) {
-        await this.$vx.post("/FileManager/moveFile", {
+        await vx.post("/FileManager/moveFile", {
           path: file,
           target: selectedNode.path,
         });
@@ -548,14 +559,14 @@ export default {
     deleteSelected() {
       this.$confirm("Delete?", { type: "warning" }).then(async () => {
         for (let p of this.selectedFolder) {
-          await this.$vx.post("/FileManager/deleteFolder", {
+          await vx.post("/FileManager/deleteFolder", {
             path: p,
           });
           await this.$refs.tree.remove(p);
         }
 
         for (let file of this.selectedFile) {
-          await this.$vx.post("/FileManager/deleteFile", {
+          await vx.post("/FileManager/deleteFile", {
             path: file,
           });
         }
@@ -582,7 +593,7 @@ export default {
       }
       if (command == "folder") {
         this.$prompt("Please input new folder name").then(async ({ value }) => {
-          let { data } = await this.$vx.post("/FileManager/createFolder", {
+          let { data } = await vx.post("/FileManager/createFolder", {
             path: this.selectedPath + "/" + value,
           });
 
@@ -593,7 +604,7 @@ export default {
     },
     async loadNode(node, resolve) {
       if (node.level === 0) {
-        /*       let { data } = await this.$vx.get("FileManager/listDirectory", {
+        /*       let { data } = await vx.get("FileManager/listDirectory", {
           params: {
             path: this.base,
           },
@@ -614,7 +625,7 @@ export default {
         return;
       }
 
-      let { data } = await this.$vx.get("/FileManager/listDirectory", {
+      let { data } = await vx.get("/FileManager/listDirectory", {
         params: {
           path: node.data.path,
         },
@@ -635,7 +646,7 @@ export default {
 
       if (this.type) {
         if (this.type == "recent") {
-          let { data } = await this.$vx.get("/FileManager/listRecentFiles", {
+          let { data } = await vx.get("/FileManager/listRecentFiles", {
             params: {
               file_type: this.fileType,
             },
@@ -647,7 +658,7 @@ export default {
         }
 
         {
-          let { data } = await this.$vx.get("/FileManager/listFiles", {
+          let { data } = await vx.get("/FileManager/listFiles", {
             params: {
               path: this.base,
               type: this.type,
@@ -666,7 +677,7 @@ export default {
       this.files = [];
       this.folders = [];
 
-      let { data } = await this.$vx.get("/FileManager/listContents", {
+      let { data } = await vx.get("/FileManager/listContents", {
         params: {
           path: this.selectedPath,
           file_type: this.fileType,
@@ -693,13 +704,13 @@ export default {
       this.folders = data.folders;
     },
     async deleteFile(file) {
-      await this.$vx.post("/FileManager/deleteFile", {
+      await vx.post("/FileManager/deleteFile", {
         path: file,
       });
       this.reloadContent();
     },
     async renameFile(data) {
-      let resp = (await this.$vx.post("/FileManager/renameFile", data)).data;
+      let resp = (await vx.post("/FileManager/renameFile", data)).data;
       if (resp.error) {
         this.$message.error(resp.error.message);
       } else {
@@ -707,27 +718,26 @@ export default {
       }
     },
     async duplicateFile(path) {
-      await this.$vx.post("/FileManager/duplicateFile", {
+      await vx.post("/FileManager/duplicateFile", {
         path,
       });
       this.reloadContent();
     },
     async deleteFolder(path) {
-      await this.$vx.post("/FileManager/deleteFolder", {
+      await vx.post("/FileManager/deleteFolder", {
         path,
       });
       this.reloadContent();
       this.$refs.tree.remove(path);
     },
     async renameFolder(data) {
-      let newNode = (await this.$vx.post("/FileManager/renameFolder", data))
-        .data;
+      let newNode = (await vx.post("/FileManager/renameFolder", data)).data;
       this.reloadContent();
       this.$refs.tree.remove(data.path);
       this.$refs.tree.append(newNode, this.selectedNode);
     },
     async moveFolder(path, target) {
-      let { data } = await this.$vx.post("/FileManager/moveFolder", {
+      let { data } = await vx.post("/FileManager/moveFolder", {
         path,
         target,
       });

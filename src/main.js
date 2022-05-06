@@ -97,18 +97,20 @@ window.i18n = i18n.global;
 
 app.use(i18n)
 
+window.I18n = i18n;
 
 
 app.use(ElementPlus)
 app.mount('#app')
 
 import VxComponent from './components/vx.js';
+app.use(VxComponent);
 
 window.apps = [];
 let init_vue = function (element) {
 
     if (!element.parentNode) return;
-    var nodes = element.parentNode.querySelectorAll("r-table, card, vue, vx-tabs, el-card, vx-form, vx-form-table, vx-view, el-table, el-link, router-link, vx-table, el-menu, vx-dialog-button");
+    var nodes = element.parentNode.querySelectorAll("r-table, vue, vx-tabs, el-card, vx-form, vx-form-table, vx-view, el-table, el-link, router-link, vx-table, el-menu, vx-dialog-button");
     nodes.forEach(node => {
 
         let app = createApp({

@@ -1,3 +1,3 @@
 <template>
-  <el-button>Button</el-button>
+  <vx-file-manager></vx-file-manager>
 </template>

@@ -4,6 +4,7 @@ import VxIcon from "./vx-icon.vue";
 
 import ElementPlus from "element-plus";
 import VxCustomizer from "./vx-customizer.vue";
+import VxComponent from "./vx.js";
 </script>
 <template>
   <!-- BEGIN: Header-->
@@ -510,6 +511,8 @@ export default {
         let m = await loadModule("/vue/test.vue", options);
         let app = createApp(m);
         app.use(ElementPlus);
+        app.use(VxComponent);
+        app.use(window.I18n);
         app.mount(this.$refs.content);
 
         return;
