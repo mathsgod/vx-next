@@ -9,9 +9,10 @@
   },
   "dependencies": {
     "@fancyapps/ui": "^4.0.26",
+    "@vueuse/core": "^8.4.2",
     "@web-auth/webauthn-helper": "^0.0.13",
     "axios": "^0.27.1",
-    "element-plus": "^2.1.11",
+    "element-plus": "^2.2.0",
     "feather-icons": "^4.29.0",
     "perfect-scrollbar": "^1.5.5",
     "register-service-worker": "^1.7.2",

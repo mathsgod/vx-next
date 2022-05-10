@@ -7,10 +7,18 @@ import Model from "./model.js";
 import { createApp } from 'vue'
 
 import ElementPlus from 'element-plus'
-import 'element-plus/dist/index.css'
+
+import { useDark, useToggle } from '@vueuse/core'
+
 
 class VX {
     endpoint;
+
+    useDark(value) {
+        const isDark = useDark()
+        const toggle = useToggle(isDark)
+        toggle(value)
+    }
 
     createApp(rootComponent) {
         let app = createApp(rootComponent);

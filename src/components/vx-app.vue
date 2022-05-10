@@ -350,23 +350,27 @@ export default {
       if (this.layoutName == "light-layout") {
         mainMenu.removeClass("menu-dark").addClass("menu-light");
         navbar.removeClass("navbar-dark").addClass("navbar-light");
+        this.$vx.useDark(false);
       }
 
       if (this.layoutName == "semi-dark-layout") {
         mainMenu.removeClass("menu-light").addClass("menu-dark");
         navbar.removeClass("navbar-dark").addClass("navbar-light");
+        this.$vx.useDark(false);
       }
 
       if (this.layoutName == "bordered-layout") {
         body.addClass("bordered-layout");
         mainMenu.removeClass("menu-dark").addClass("menu-light");
         navbar.removeClass("navbar-dark").addClass("navbar-light");
+        this.$vx.useDark(false);
       }
 
       if (this.layoutName == "dark-layout") {
         body.addClass("dark-layout");
         mainMenu.removeClass("menu-dark").addClass("menu-light");
         navbar.removeClass("navbar-dark").addClass("navbar-light");
+        this.$vx.useDark(true);
       }
 
       this.$vx.setLayout(this.layoutName);
