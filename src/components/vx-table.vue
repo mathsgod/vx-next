@@ -33,28 +33,24 @@ import { RefreshRight, Search } from "@element-plus/icons-vue";
       </el-collapse-item>
     </el-collapse>
 
-    <div
-      v-if="pagination"
-      class="d-flex justify-content-between align-items-center mb-50 mt-50"
-    >
-      <div class="d-flex">
-        <div>
-          Show
-          <el-tooltip :content="$t('vx-per-page')" placement="top">
-            <el-select v-model="localPerPage" style="width: 70px" :size="size">
-              <el-option
-                v-for="(p, index) in pageLengthOption"
-                :value="p"
-                v-text="p"
-                :key="index"
-              ></el-option>
-            </el-select>
-          </el-tooltip>
-          entries
-        </div>
+    <div v-if="pagination" class="row q-py-md">
+      <div>
+        Show
+        <el-tooltip :content="$t('vx-per-page')" placement="top">
+          <el-select v-model="localPerPage" style="width: 70px" :size="size">
+            <el-option
+              v-for="(p, index) in pageLengthOption"
+              :value="p"
+              v-text="p"
+              :key="index"
+            ></el-option>
+          </el-select>
+        </el-tooltip>
+        entries
       </div>
+      <q-space />
 
-      <div class="d-flex justify-content-end">
+      <div>
         <el-tooltip :content="$t('Reload')" placement="top">
           <el-button
             @click="reload"

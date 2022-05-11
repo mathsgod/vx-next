@@ -28,6 +28,8 @@ export default {
   },
   methods: {
     async onTabClick(pane, ev) {
+      console.log(pane);
+
       window.$(pane.instance.vnode.el).empty();
       await this.loadContent(pane.instance.attrs.link, pane.instance.vnode.el);
     },

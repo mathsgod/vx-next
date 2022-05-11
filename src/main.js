@@ -1,12 +1,11 @@
-import './assets/css/bootstrap.css';
-import './assets/css/bootstrap-extended.css';
-import './assets/css/colors.css';
-import './assets/css/components.css';
-import './assets/css/themes/dark-layout.css';
-import './assets/css/themes/bordered-layout.css';
-import './assets/css/themes/semi-dark-layout.css';
-import './assets/css/core/menu/menu-types/vertical-menu.css'
+import './style/index.css';
 
+// Import Quasar css
+import 'quasar/src/css/index.sass'
+
+// Import icon libraries
+import '@quasar/extras/material-icons/material-icons.css'
+import '@quasar/extras/fontawesome-v6/fontawesome-v6.css'
 
 // element plus
 import ElementPlus from 'element-plus'
@@ -73,6 +72,28 @@ import App from './App.vue'
 const app = createApp(App)
 app.use(router)
 
+import { Quasar, Dark } from 'quasar'
+window.Dark = Dark;
+app.use(Quasar, {
+    plugins: {}, // import Quasar plugins and add here,
+    // src/css/quasar.variables.sass
+
+    config: {
+        brand: {
+            primary: '#7367f0',
+            secondary: '#82868b',
+            accent: '#7367f0',
+
+            dark: '#1d1d1d',
+
+            positive: '#28c76f',
+            negative: '#ea5455',
+            info: '#00cfe8',
+            warning: '#ff9f43'
+        }
+    }
+})
+
 
 import vx from './vx';
 app.use(vx);
@@ -124,6 +145,7 @@ let init_vue = function (element) {
         app.use(ElementPlus)
         app.use(vx)
         app.use(VxComponent);
+        app.use(Quasar);
 
 
         app.mount(node.parentNode);

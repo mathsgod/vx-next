@@ -11,6 +11,7 @@ import ElementPlus from 'element-plus'
 import { useDark, useToggle } from '@vueuse/core'
 
 
+
 class VX {
     endpoint;
 
@@ -18,6 +19,7 @@ class VX {
         const isDark = useDark()
         const toggle = useToggle(isDark)
         toggle(value)
+        window.Dark.set(value);
     }
 
     createApp(rootComponent) {
@@ -44,6 +46,9 @@ class VX {
             baseURL: config.endpoint,
             headers: headers
         });
+
+
+        window.axios = this.axios;
 
         let { data } = await this.get("/");
         if (data.error) {
