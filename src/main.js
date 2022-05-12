@@ -10,32 +10,46 @@ import 'quasar/src/css/index.sass'
 import '@quasar/extras/material-icons/material-icons.css'
 import '@quasar/extras/fontawesome-v6/fontawesome-v6.css'
 
-// element plus
-import ElementPlus from 'element-plus'
-import 'element-plus/dist/index.css'
 
-import './scss/main.scss';
+
 import { createApp } from 'vue';
 import * as Vue from 'vue';
 window.Vue = Vue;
 
 
-
+// app
+import App from './App.vue'
+const app = createApp(App)
 import routes from "./routes.js";
-
 import { createRouter, createWebHistory } from 'vue-router';
 const router = createRouter({
     history: createWebHistory(),
     routes,
 });
-
-// app
-import App from './App.vue'
-
-
-
-const app = createApp(App)
 app.use(router)
+
+
+// element plus
+import ElementPlus from 'element-plus'
+//import 'element-plus/dist/index.css'
+import './scss/main.scss';
+
+app.use(ElementPlus)
+
+// element plus icons
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+    console.log(key, component)
+
+    //key to underscore
+    const keyUnderscore = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+    //removing the first _
+    const keyUnderscore2 = keyUnderscore.replace(/^_/, '');
+
+    app.component("el-icon-" + keyUnderscore2, component)
+    console.log("el-icon-" + keyUnderscore2)
+}
+
 
 import { Quasar, Dark } from 'quasar'
 window.Dark = Dark;
@@ -59,9 +73,12 @@ app.use(Quasar, {
     }
 })
 
-
+// VX
 import vx from './vx';
 app.use(vx);
+
+import VxComponent from './components/vx.js';
+app.use(VxComponent);
 
 
 //i18n
@@ -80,17 +97,11 @@ const i18n = createI18n({
 });
 
 window.i18n = i18n.global;
-
+window.I18n = i18n;
 app.use(i18n)
 
-window.I18n = i18n;
-
-
-app.use(ElementPlus)
 app.mount('#app')
 
-import VxComponent from './components/vx.js';
-app.use(VxComponent);
 
 window.apps = [];
 let init_vue = function (element) {

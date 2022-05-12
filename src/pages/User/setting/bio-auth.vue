@@ -1,4 +1,4 @@
-<template >
+<template>
   <el-card :header="$t('Biometric authentication')">
     <el-switch
       v-model="on_off"
@@ -75,9 +75,7 @@ export default {
       this.on_off = true;
     },
     async reload() {
-      let { data } = await this.$vx.get(
-        "setting-bio-auth?_entry=getCredential"
-      );
+      let { data } = await this.$vx.get("bio-auth?_entry=getCredential");
       this.items = data;
     },
   },

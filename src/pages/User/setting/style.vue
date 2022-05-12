@@ -49,11 +49,13 @@
         <el-switch v-model="form.description_border"></el-switch>
       </el-form-item>
 
-      <el-button
-        type="primary"
-        @click="save"
-        v-text="$t('Save changes')"
-      ></el-button>
+      <div>
+        <el-button
+          type="primary"
+          @click="save"
+          v-text="$t('Save changes')"
+        ></el-button>
+      </div>
     </el-form>
   </el-card>
 </template>

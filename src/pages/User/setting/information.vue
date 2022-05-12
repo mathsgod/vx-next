@@ -16,7 +16,9 @@
       </el-form-item>
 
       <el-form-item>
-        <q-btn color="primary" icon="check" @click="submit">Submit</q-btn>
+        <el-button type="primary" icon="el-icon-check" @click="submit"
+          >Submit</el-button
+        >
       </el-form-item>
     </el-form>
   </el-card>
