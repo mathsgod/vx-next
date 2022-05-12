@@ -101,7 +101,7 @@ const toggleRightDrawer = () => {
           </q-breadcrumbs>
         </q-toolbar>
         <router-view></router-view>
-        <div ref="content"></div>
+        <div ref="content" v-loading="loading"></div>
 
         <!-- q-page-scroller
           position="bottom-right"
@@ -217,15 +217,17 @@ export default {
 
       this.title = path.split("/").pop();
 
-      if(this.hasComponent){
+      if (this.hasComponent) {
         return;
       }
 
+      this.loading = true;
       let resp = await this.$vx.get(path, {
         headers: {
           Accept: "text/vue,text/html",
         },
       });
+      this.loading = false;
 
       let content = "";
       //chech content type is vue

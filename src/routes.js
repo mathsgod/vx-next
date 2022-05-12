@@ -38,7 +38,7 @@ export default [
         children: [
             {
                 path: "setting",
-                component: import("./pages/page-user-setting.vue"),
+                component: import("./pages/User/setting.vue"),
                 children: [{
                     path: "general",
                     component: import("./pages/User/setting/general.vue")
@@ -61,6 +61,11 @@ export default [
                     path: "bio-auth",
                     component: import("./pages/User/setting/bio-auth.vue")
                 }]
+
+            },
+            {
+                path: "profile",
+                component: import("./pages/User/profile.vue")
             }
         ]
     },

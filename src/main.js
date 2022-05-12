@@ -39,22 +39,23 @@ app.use(ElementPlus)
 // element plus icons
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
-    console.log(key, component)
 
     //key to underscore
     const keyUnderscore = key.replace(/([A-Z])/g, '_$1').toLowerCase();
     //removing the first _
     const keyUnderscore2 = keyUnderscore.replace(/^_/, '');
-
-    app.component("el-icon-" + keyUnderscore2, component)
-    console.log("el-icon-" + keyUnderscore2)
+    //replace _ to -
+    const keyUnderscore3 = keyUnderscore2.replace(/_/g, '-');
+    app.component("el-icon-" + keyUnderscore3, component)
 }
 
 
-import { Quasar, Dark } from 'quasar'
+import { Quasar, Dark, LoadingBar, useQuasar } from 'quasar'
 window.Dark = Dark;
 app.use(Quasar, {
-    plugins: {}, // import Quasar plugins and add here,
+    plugins: {
+        LoadingBar
+    }, // import Quasar plugins and add here,
     // src/css/quasar.variables.sass
 
     config: {
@@ -132,9 +133,9 @@ let init_vue = function (element) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("content loaded");
+    //console.log("content loaded");
     let observer = new MutationObserver(mutationList => {
-        console.log("mutations");
+        //  console.log("mutations");
 
         mutationList.forEach(record => {
             init_vue(record.target);

@@ -108,14 +108,54 @@
         <q-space></q-space>
         <q-btn flat round icon="web" @click="grid = !grid"></q-btn>
       </q-toolbar>
-      <q-table
-        flat
-        bordered 
-        :grid="grid"
-        :columns="columns"
-        :rows="files"
-        :pagination="pagination"
-      ></q-table>
+
+      <template v-if="grid">
+        <q-table
+          title="Folders"
+          flat
+          bordered
+          grid
+          :columns="columns"
+          :row="fileFolders"
+        >
+        </q-table>
+        <q-table
+          title="Files"
+          flat
+          bordered
+          grid
+          :columns="columns"
+          :rows="files"
+          :pagination="pagination"
+        >
+          <template v-slot:item="props"
+            ><div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
+              <q-card class="my-card">
+                <template v-if="canPreviewImage(props.row)">
+                  <el-image
+                    :src="`${endpoint}photo/0/${props.row.path}?w=200`"
+                    lazy
+                  ></el-image>
+                </template>
+
+                <q-card-section>
+                  <div class="text-subtitle2">{{ props.row.name }}</div>
+                </q-card-section>
+              </q-card>
+            </div>
+          </template>
+        </q-table>
+      </template>
+      <template v-else>
+        <q-table flat bordered :columns="columns" :rows="folderAndFiles">
+          <template #body-cell-icon="props">
+            <q-td>
+              <q-icon name="folder" v-if="props.value == 'folder'" />
+              <q-icon name="description" v-else />
+            </q-td>
+          </template>
+        </q-table>
+      </template>
     </q-page-container>
   </q-layout>
 </template>
@@ -132,6 +172,11 @@ export default {
     };
 
     const columns = ref([
+      {
+        name: "icon",
+        label: "",
+        field: "type",
+      },
       {
         name: "name",
         label: "Name",
@@ -193,32 +238,6 @@ export default {
       byWebsite,
       byDate,
 
-      links1: [
-        { icon: "web", text: "Top stories" },
-        { icon: "person", text: "For you" },
-        { icon: "star_border", text: "Favourites" },
-        { icon: "search", text: "Saved searches" },
-      ],
-      links2: [
-        { icon: "flag", text: "Canada" },
-        { icon: fasEarthAmericas, text: "World" },
-        { icon: "place", text: "Local" },
-        { icon: "domain", text: "Business" },
-        { icon: "memory", text: "Technology" },
-        { icon: "local_movies", text: "Entertainment" },
-        { icon: "directions_bike", text: "Sports" },
-        { icon: fasFlask, text: "Science" },
-        { icon: "fitness_center", text: "Health " },
-      ],
-      links3: [
-        { icon: "", text: "Language & region" },
-        { icon: "", text: "Settings" },
-        { icon: "open_in_new", text: "Get the Android app" },
-        { icon: "open_in_new", text: "Get the iOS app" },
-        { icon: "", text: "Send feedback" },
-        { icon: "open_in_new", text: "Help" },
-      ],
-
       onClear,
       changeDate,
       toggleLeftDrawer,
@@ -226,6 +245,7 @@ export default {
   },
   data() {
     return {
+      endpoint: vx.endpoint,
       showSelectFolder: false,
       showSidebar: false,
       parentPath: "",
@@ -244,10 +264,16 @@ export default {
       nextSelectedFiles: [],
       file_upload_max_size: "",
       grid: false,
+      fileFolders: [],
     };
   },
   created() {
     this.reloadContent();
+  },
+  computed: {
+    folderAndFiles() {
+      return this.fileFolders.concat(this.files);
+    },
   },
   watch: {
     async selectedFolder(val) {
@@ -256,10 +282,25 @@ export default {
           path: val,
         },
       });
-      this.files = data.files;
+      this.files = data.files.map((file) => {
+        file.type = "file";
+        return file;
+      });
+
+      this.fileFolders = data.folders.map((folder) => {
+        folder.type = "folder";
+        return folder;
+      });
     },
   },
   methods: {
+    canPreviewImage(file) {
+      if (file.mime_type == "image/jpeg") return true;
+      if (file.mime_type == "image/png") return true;
+      if (file.mime_type == "image/gif") return true;
+      return false;
+    },
+
     onSelectFolder(target) {
       console.log(target);
     },
@@ -276,6 +317,7 @@ export default {
       });
       done(data);
     },
+
     async reloadContent() {
       this.file_uploader = false;
       this.selectedFolder = [];
@@ -325,6 +367,8 @@ export default {
       this.parentPath = data.parent;
       this.files = data.files;
 
+      console.log(this.files);
+
       for (let f of this.files) {
         console.log(f.path);
         f.selected = this.nextSelectedFiles.includes(f.path);
@@ -333,8 +377,6 @@ export default {
           this.selectedFile.push(f.path);
         }
       }
-
-      console.log(this.files);
 
       //this.nextSelectedFiles = [];
 

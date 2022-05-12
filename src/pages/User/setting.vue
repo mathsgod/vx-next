@@ -56,7 +56,7 @@ export default {
   setup() {
     return {
       tab: ref("mails"),
-      splitterModel: ref(20),
+      splitterModel: ref("140px"),
     };
   },
 };

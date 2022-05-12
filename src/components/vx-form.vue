@@ -3,23 +3,20 @@ import { Check } from "@element-plus/icons-vue";
 </script>
 <template>
   <el-card v-loading="loading">
-    <el-card-body>
-      <el-form
-        label-width="auto"
-        @submit.prevent
-        :model="form"
-        ref="form1"
-        class="vx-form"
-        :size="size"
-      >
-        <slot v-bind:form="form"></slot>
-      </el-form>
-        <el-button @click="onSubmit()" :icon="Check" type="primary"
-        >Submit</el-button
-      >
-      <el-button @click="onBack">Back</el-button>
-    </el-card-body>
-
+    <el-form
+      label-width="auto"
+      @submit.prevent
+      :model="form"
+      ref="form1"
+      class="vx-form"
+      :size="size"
+    >
+      <slot v-bind:form="form"></slot>
+    </el-form>
+    <el-button @click="onSubmit()" :icon="Check" type="primary"
+      >Submit</el-button
+    >
+    <el-button @click="onBack">Back</el-button>
   </el-card>
 </template>
 <script>
