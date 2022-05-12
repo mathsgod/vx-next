@@ -15,12 +15,12 @@ const toggleRightDrawer = () => {
 };
 </script>
 <template>
-  <q-layout view="hHh lpR lFr">
+  <q-layout view="hHh LpR lFr">
     <q-header bordered class="text-white" :class="headerColor">
       <q-toolbar>
         <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
 
-        <q-toolbar-title> Title </q-toolbar-title>
+        <q-toolbar-title> {{ $vx.config.company }} </q-toolbar-title>
 
         <q-btn flat round dense icon="person">
           <q-menu>
@@ -28,9 +28,22 @@ const toggleRightDrawer = () => {
               <q-item v-close-popup to="/User/profile">
                 <q-item-section>Profile</q-item-section>
               </q-item>
+              <q-item v-close-popup to="/User/setting">
+                <q-item-section>Setting</q-item-section>
+              </q-item>
+
+              <q-item
+                clickable
+                v-for="(dd, index) in $vx.navbar.dropdown"
+                :key="index"
+                :to="dd.link"
+              >
+                <q-item-section v-text="dd.label"> </q-item-section>
+              </q-item>
+
               <q-separator />
               <q-item clickable v-close-popup>
-                <q-item-section>Logout</q-item-section>
+                <q-item-section @click="logout()">Logout</q-item-section>
               </q-item>
             </q-list>
           </q-menu>
@@ -47,6 +60,7 @@ const toggleRightDrawer = () => {
       :mini-to-overlay="style.miniState"
       @mouseout="isMouseOnDrawer = false"
       @mouseover="isMouseOnDrawer = true"
+      :width="260"
     >
       <!-- drawer content -->
       <q-scroll-area class="fit">
@@ -75,8 +89,7 @@ const toggleRightDrawer = () => {
     <q-page-container>
       <q-page padding>
         <q-toolbar>
-          <q-toolbar-title><strong v-text="title"></strong></q-toolbar-title>
-
+          <q-toolbar-title shrink>{{ title }}</q-toolbar-title>
           <q-breadcrumbs>
             <q-breadcrumbs-el label="Home" to="/" />
             <q-breadcrumbs-el
@@ -87,13 +100,20 @@ const toggleRightDrawer = () => {
             ></q-breadcrumbs-el>
           </q-breadcrumbs>
         </q-toolbar>
+        <router-view></router-view>
+        <div ref="content"></div>
 
-        <div ref="content" v-loading="loading"></div>
+        <!-- q-page-scroller
+          position="bottom-right"
+          :scroll-offset="150"
+          :offset="[18, 18]"
+        >
+          <q-btn fab icon="keyboard_arrow_up" color="primary" />
+        </q-page-scroller -->
       </q-page>
     </q-page-container>
   </q-layout>
 </template>
-
 
 <script>
 import { loadModule } from "vue3-sfc-loader";
@@ -124,6 +144,12 @@ export default {
     async $route(to) {
       this.$vx.setRoute(to);
       this.loadURL(to.fullPath);
+
+      if (this.$route.matched.length > 1) {
+        this.hasComponent = true;
+      } else {
+        this.hasComponent = false;
+      }
     },
   },
   async mounted() {
@@ -170,7 +196,19 @@ export default {
     },
   },
   methods: {
+    async logout() {
+      await this.$vx.logout();
+      this.$emit("logout");
+      this.$router.push("/");
+    },
+
     async loadURL(path) {
+      //unmount all
+      for (let a of window.apps) {
+        a.unmount();
+      }
+      window.apps = [];
+
       this.loading = true;
       let content_el = this.$refs.content;
       while (content_el.firstChild) {
@@ -178,6 +216,10 @@ export default {
       }
 
       this.title = path.split("/").pop();
+
+      if(this.hasComponent){
+        return;
+      }
 
       let resp = await this.$vx.get(path, {
         headers: {
@@ -213,6 +255,8 @@ export default {
         app.use(window.I18n);
         app.use(Quasar);
         app.mount(this.$refs.content);
+
+        window.apps.push(app);
 
         return;
       }

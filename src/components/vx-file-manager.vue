@@ -1,410 +1,228 @@
-<script setup>
-import "../assets/css/plugins/extensions/ext-component-tree.css";
-import "../assets/css/pages/app-file-manager.css";
-import PerfectScrollbar from "perfect-scrollbar";
-import VxFileManagerFile from "./vx-file-manager-file.vue";
-import VxFileManagerFolder from "./vx-file-manager-folder.vue";
-import feather from "feather-icons";
-import VxFileManagerLabels from "./vx-file-manager-labels.vue";
-</script>
 <template>
-  <div class="file-manager-application vx-file-manager">
-    <div class="content-area-wrapper vx-file-manager-content">
-      <div class="sidebar-left">
-        <div class="sidebar">
-          <div class="sidebar-file-manager" :class="{ show: showSidebar }">
-            <div class="sidebar-inner">
-              <!-- sidebar menu links starts -->
+  <q-layout
+    view="hHh lpR fFf"
+    class="bg-white vx-file-manager"
+    container
+    style="min-height: 700px"
+  >
+    <q-header bordered class="bg-white text-grey-8" height-hint="64">
+      <q-toolbar class="GNL__toolbar">
+        <q-btn
+          flat
+          dense
+          round
+          @click="toggleLeftDrawer"
+          aria-label="Menu"
+          icon="menu"
+          class="q-mr-sm"
+        />
 
-              <!-- add file button -->
-              <div class="dropdown dropdown-actions">
-                <button
-                  class="btn btn-primary add-file-btn text-center w-100"
-                  type="button"
-                  id="addNewFile"
-                  data-bs-toggle="dropdown"
-                  aria-haspopup="true"
-                  aria-expanded="true"
-                >
-                  <span class="align-middle">Add New</span>
-                </button>
-                <div class="dropdown-menu" aria-labelledby="addNewFile">
-                  <div class="dropdown-item" @click="addNew('folder')">
-                    <div class="mb-0">
-                      <i data-feather="folder" class="me-25"></i>
-                      <span class="align-middle">Folder</span>
-                    </div>
-                  </div>
-                  <div class="dropdown-item" @click="addNew('file')">
-                    <div class="mb-0" for="file-upload">
-                      <i data-feather="upload-cloud" class="me-25"></i>
-                      <span class="align-middle">File Upload</span>
-                      <input type="file" id="file-upload" hidden />
-                    </div>
-                  </div>
-                  <!-- div class="dropdown-item">
-                    <div for="folder-upload" class="mb-0">
-                      <i data-feather="upload-cloud" class="me-25"></i>
-                      <span class="align-middle">Folder Upload</span>
-                      <input
-                        type="file"
-                        id="folder-upload"
-                        webkitdirectory
-                        mozdirectory
-                        hidden
-                      />
-                    </div >
-                  </div -->
-                </div>
-              </div>
-              <!-- add file button ends -->
+        <q-toolbar-title
+          v-if="$q.screen.gt.xs"
+          shrink
+          class="row items-center no-wrap"
+        >
+          <span class="q-ml-sm">File manager</span>
+        </q-toolbar-title>
 
-              <!-- sidebar list items starts  -->
-              <div class="sidebar-list" ref="sidebarList">
-                <!-- links for file manager sidebar -->
-                <el-tree
-                  draggable
-                  class="mb-2"
-                  ref="tree"
-                  lazy
-                  :load="loadNode"
-                  @node-click="handleNodeClick"
-                  node-key="path"
-                  :expand-on-click-node="false"
-                  :default-expanded-keys="[base]"
-                  @node-drag-end="handleDragEnd"
-                  :allow-drop="allowDrop"
-                  @node-drop="handleDrop"
-                  :highlight-current="true"
-                ></el-tree>
-                <a
-                  @click="listFiles('recent')"
-                  href="javascript:void(0)"
-                  class="list-group-item list-group-item-action"
-                >
-                  <i data-feather="clock" class="mr-50 font-medium-3"></i>
-                  <span class="align-middle">Recents</span>
-                </a>
+        <q-space />
 
-                <VxFileManagerLabels
-                  :default-action="defaultAction"
-                  :file-type="fileType"
-                  :value="type"
-                  @input="listFiles($event)"
-                ></VxFileManagerLabels>
+        <q-input
+          class="GNL__toolbar-input"
+          outlined
+          dense
+          v-model="search"
+          color="bg-grey-7 shadow-1"
+          placeholder="Search for file name"
+        >
+          <template v-slot:prepend>
+            <q-icon v-if="search === ''" name="search" />
+            <q-icon
+              v-else
+              name="clear"
+              class="cursor-pointer"
+              @click="search = ''"
+            />
+          </template>
+        </q-input>
 
-                <!-- links for file manager sidebar ends -->
+        <q-space />
+      </q-toolbar>
+    </q-header>
 
-                <!-- storage status of file manager starts-->
-                <!-- div class="storage-status mb-1 px-2">
-                  <h6 class="section-label mb-1">Storage Status</h6>
-                  <div class="d-flex align-items-center cursor-pointer">
-                    <i data-feather="server" class="font-large-1"></i>
-                    <div class="file-manager-progress ml-1">
-                      <span>68GB used of 100GB</span>
-                      <div
-                        class="progress progress-bar-primary my-50"
-                        style="height: 6px"
-                      >
-                        <div
-                          class="progress-bar"
-                          role="progressbar"
-                          aria-valuenow="80"
-                          aria-valuemin="80"
-                          aria-valuemax="100"
-                          style="width: 80%"
-                        ></div>
-                      </div>
-                    </div>
-                  </div>
-                </div -->
-                <!-- storage status of file manager ends-->
-              </div>
-              <!-- side bar list items ends  -->
-              <!-- sidebar menu links ends -->
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="content-right">
-        <div class="content-wrapper">
-          <div class="content-header row"></div>
-          <div class="content-body">
-            <!-- overlay container -->
-            <div
-              class="body-content-overlay"
-              ref="overlay"
-              @click="showSidebar = false"
-              :class="{ show: showSidebar }"
-            ></div>
+    <q-drawer
+      v-model="leftDrawerOpen"
+      show-if-above
+      bordered
+      class="bg-white"
+      :width="257"
+    >
+      <q-scroll-area class="fit">
+        <q-list padding class="text-grey-8">
+          <q-expansion-item
+            label="Storage"
+            default-opened
+            icon="web"
+            class="GNL__drawer-item"
+            selectable
+          >
+            <q-tree
+              class="q-pl-lg"
+              :nodes="folders"
+              node-key="path"
+              label-key="name"
+              @lazy-load="onLazyLoad"
+              v-model:selected="selectedFolder"
+            >
+            </q-tree>
+          </q-expansion-item>
 
-            <!-- file manager app content starts -->
-            <div class="file-manager-main-content">
-              <!-- search area start -->
-              <div
-                class="
-                  file-manager-content-header
-                  d-flex
-                  justify-content-between
-                  align-items-center
-                "
-              >
-                <div class="d-flex align-items-center">
-                  <div
-                    @click="showSidebar = !showSidebar"
-                    class="
-                      sidebar-toggle
-                      d-block d-xl-none
-                      float-left
-                      align-middle
-                      ml-1
-                    "
-                  >
-                    <i data-feather="menu" class="font-medium-5"></i>
-                  </div>
-                  <div
-                    class="
-                      input-group input-group-merge
-                      shadow-none
-                      m-0
-                      flex-grow-1
-                    "
-                  >
-                    <div class="input-group-prepend">
-                      <span class="input-group-text border-0">
-                        <vx-icon name="search" width="14"></vx-icon>
-                      </span>
-                    </div>
-                    <input
-                      type="text"
-                      class="form-control files-filter border-0 bg-transparent"
-                      placeholder="Search"
-                      @keyup="onSearch($event)"
-                      v-model="search_text"
-                    />
-                  </div>
-                </div>
+          <q-separator inset class="q-my-sm" />
 
-                <div class="d-flex align-items-center">
-                  <el-button-group
-                    v-if="selectedFolder.length + selectedFile.length > 0"
-                  >
-                    <el-button icon="el-icon-delete" @click="deleteSelected"
-                      >Delete</el-button
-                    >
-                    <template v-if="selectedFile.length > 0">
-                      <el-button
-                        icon="el-icon-document-checked"
-                        @click="selectClicked"
-                        v-if="showSelectButton"
-                      >
-                        Select
-                      </el-button>
-                      <el-button @click="showSelectFolder = true"
-                        >Move</el-button
-                      >
-                    </template>
-                  </el-button-group>
+          <q-item class="GNL__drawer-item">
+            <q-item-section>
+              <q-item-label>Labels</q-item-label>
+            </q-item-section>
+          </q-item>
 
-                  <el-button-group>
-                    <el-button
-                      icon="el-icon-menu"
-                      class="active"
-                      @click="mode = 'grid'"
-                    ></el-button>
-                    <el-button @click="mode = 'list'"
-                      ><i class="fa fa-list"></i
-                    ></el-button>
-                  </el-button-group>
-                </div>
-              </div>
-              <!-- search area ends here -->
+          <q-item class="GNL__drawer">
+            <q-item-section avatar>
+              <q-icon name="label" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Document </q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-scroll-area>
+    </q-drawer>
 
-              <div class="file-manager-content-body" ref="fileContent">
-                <template v-if="file_uploader">
-                  <el-upload
-                    ref="uploads"
-                    class="upload-demo"
-                    drag
-                    :action="action"
-                    multiple
-                    :headers="uploadHeaders"
-                    :data="{ path: selectedPath }"
-                    :on-success="onSuccessUpload"
-                    :on-error="onErrorUpload"
-                    :accept="accept"
-                  >
-                    <i class="el-icon-upload"></i>
-                    <div class="el-upload__text">
-                      Drop file here or <em>click to upload</em>
-                    </div>
-                    <template #tip>
-                      <div class="el-upload__tip">
-                        Files with a size less than
-                        {{ file_upload_max_size }}
-                      </div>
-                    </template>
-                  </el-upload>
+    <q-drawer side="right" show-if-above bordered> </q-drawer>
 
-                  <el-divider></el-divider>
-                </template>
-
-                <!-- Folders Container Starts -->
-                <div
-                  class="view-container"
-                  :class="mode == 'list' ? 'list-view' : ''"
-                >
-                  <h6 class="files-section-title mt-25 mb-75">Folders</h6>
-                  <div class="files-header">
-                    <h6 class="font-weight-bold mb-0" v-t="'Name'"></h6>
-                    <div>
-                      <h6
-                        class="
-                          font-weight-bold
-                          file-item-size
-                          d-inline-block
-                          mb-0
-                        "
-                        v-t="'Size'"
-                      ></h6>
-                      <h6
-                        class="
-                          font-weight-bold
-                          file-last-modified
-                          d-inline-block
-                          mb-0
-                        "
-                        v-t="'Date modified'"
-                      ></h6>
-                      <h6 class="font-weight-bold d-inline-block mr-1 mb-0">
-                        Actions
-                      </h6>
-                    </div>
-                  </div>
-
-                  <div
-                    class="card file-manager-item folder level-up"
-                    v-if="showLevelUp"
-                    @click="onLevelUp"
-                  >
-                    <div class="card-img-top file-logo-wrapper">
-                      <div
-                        class="
-                          d-flex
-                          align-items-center
-                          justify-content-center
-                          w-100
-                        "
-                      >
-                        <i class="fa fa-arrow-up"></i>
-                      </div>
-                    </div>
-                    <div class="card-body pl-2 pt-0 pb-1">
-                      <div class="content-wrapper">
-                        <p class="card-text file-name mb-0">...</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <VxFileManagerFolder
-                    v-for="(folder, index) in folders"
-                    :key="index"
-                    :folder="folder"
-                    @delete="deleteFolder($event)"
-                    @selected="selectFolder($event)"
-                    @unselected="unselectFolder($event)"
-                    @rename="renameFolder($event)"
-                    @input="folderClicked($event)"
-                  ></VxFileManagerFolder>
-
-                  <div
-                    class="flex-grow-1 align-items-center no-result mb-3"
-                    v-if="search_text != '' && folders.length == 0"
-                  >
-                    <i class="fa fa-exclamation-circle mr-50"></i>
-                    No Results
-                  </div>
-                </div>
-                <!-- /Folders Container Ends -->
-
-                <!-- Files Container Starts -->
-                <div
-                  class="view-container"
-                  :class="mode == 'list' ? 'list-view' : ''"
-                >
-                  <h6 class="files-section-title mt-2 mb-75">Files</h6>
-
-                  <VxFileManagerFile
-                    :mode="mode"
-                    v-for="f in files"
-                    :key="f.path"
-                    :file="f"
-                    @delete="deleteFile($event)"
-                    @rename="renameFile($event)"
-                    @duplicate="duplicateFile($event)"
-                    @selected="selectedFile.push($event)"
-                    @unselected="
-                      selectedFile = selectedFile.filter((s) => s != $event)
-                    "
-                    @input="inputFile($event)"
-                  ></VxFileManagerFile>
-
-                  <div
-                    class="flex-grow-1 align-items-center no-result mb-3"
-                    v-if="search_text != '' && files.length == 0"
-                  >
-                    <i class="fa fa-exclamation-circle mr-50"></i>
-                    No Results
-                  </div>
-                </div>
-                <!-- /Files Container Ends -->
-              </div>
-            </div>
-            <!-- file manager app content ends -->
-          </div>
-        </div>
-      </div>
-    </div>
-    <el-dialog v-model="showSelectFolder" title="Select folder ...">
-      <el-tree
-        ref="tree2"
-        lazy
-        :load="loadNode"
-        node-key="path"
-        :expand-on-click-node="false"
-        :default-expanded-keys="[base]"
-        :highlight-current="true"
-        class="mb-1"
-      ></el-tree>
-      <el-button
-        type="primary"
-        @click="moveSelectedTo($refs.tree2.getCurrentNode())"
-        >Select</el-button
-      >
-    </el-dialog>
-  </div>
+    <q-page-container style="height: 700px">
+      <q-toolbar>
+        <q-breadcrumbs>
+          <q-breadcrumbs-el label="Storage"></q-breadcrumbs-el>
+          <q-breadcrumbs-el label="Test"></q-breadcrumbs-el>
+        </q-breadcrumbs>
+        <q-space></q-space>
+        <q-btn flat round icon="web" @click="grid = !grid"></q-btn>
+      </q-toolbar>
+      <q-table
+        flat
+        bordered 
+        :grid="grid"
+        :columns="columns"
+        :rows="files"
+        :pagination="pagination"
+      ></q-table>
+    </q-page-container>
+  </q-layout>
 </template>
 
-<style scoped>
-.vx-file-manager-content {
-  line-height: 1;
-}
-</style>
-
 <script>
+import { ref } from "vue";
+import { fasEarthAmericas, fasFlask } from "@quasar/extras/fontawesome-v6";
+
 export default {
-  props: {
-    base: {
-      type: String,
-      default: "",
-    },
-    defaultAction: {
-      default: "preview",
-      type: String,
-    },
-    fileType: String,
-    accept: String,
-    multiple: Boolean,
+  setup() {
+    const pagination = {
+      rowsPerPage: 0,
+      "rows-per-page-options": [0],
+    };
+
+    const columns = ref([
+      {
+        name: "name",
+        label: "Name",
+        field: "name",
+        sortable: true,
+        align: "left",
+      },
+      {
+        name: "last_modified",
+        label: "Last Modified",
+        field: "last_modified_human",
+        align: "left",
+      },
+      {
+        name: "size_display",
+        label: "Size",
+        field: "size_display",
+        align: "left",
+      },
+    ]);
+
+    const leftDrawerOpen = ref(false);
+    const search = ref("");
+    const showAdvanced = ref(false);
+    const showDateOptions = ref(false);
+    const exactPhrase = ref("");
+    const hasWords = ref("");
+    const excludeWords = ref("");
+    const byWebsite = ref("");
+    const byDate = ref("Any time");
+
+    function onClear() {
+      exactPhrase.value = "";
+      hasWords.value = "";
+      excludeWords.value = "";
+      byWebsite.value = "";
+      byDate.value = "Any time";
+    }
+
+    function changeDate(option) {
+      byDate.value = option;
+      showDateOptions.value = false;
+    }
+
+    function toggleLeftDrawer() {
+      leftDrawerOpen.value = !leftDrawerOpen.value;
+    }
+
+    return {
+      pagination,
+      columns,
+      leftDrawerOpen,
+      search,
+      showAdvanced,
+      showDateOptions,
+      exactPhrase,
+      hasWords,
+      excludeWords,
+      byWebsite,
+      byDate,
+
+      links1: [
+        { icon: "web", text: "Top stories" },
+        { icon: "person", text: "For you" },
+        { icon: "star_border", text: "Favourites" },
+        { icon: "search", text: "Saved searches" },
+      ],
+      links2: [
+        { icon: "flag", text: "Canada" },
+        { icon: fasEarthAmericas, text: "World" },
+        { icon: "place", text: "Local" },
+        { icon: "domain", text: "Business" },
+        { icon: "memory", text: "Technology" },
+        { icon: "local_movies", text: "Entertainment" },
+        { icon: "directions_bike", text: "Sports" },
+        { icon: fasFlask, text: "Science" },
+        { icon: "fitness_center", text: "Health " },
+      ],
+      links3: [
+        { icon: "", text: "Language & region" },
+        { icon: "", text: "Settings" },
+        { icon: "open_in_new", text: "Get the Android app" },
+        { icon: "open_in_new", text: "Get the iOS app" },
+        { icon: "", text: "Send feedback" },
+        { icon: "open_in_new", text: "Help" },
+      ],
+
+      onClear,
+      changeDate,
+      toggleLeftDrawer,
+    };
   },
   data() {
     return {
@@ -416,7 +234,7 @@ export default {
       files: [],
       folders: [],
       mode: "list",
-      selectedFolder: [],
+      selectedFolder: null,
       selectedFile: [],
       file_uploader: false,
       action: "",
@@ -425,219 +243,38 @@ export default {
       search_text: "",
       nextSelectedFiles: [],
       file_upload_max_size: "",
+      grid: false,
     };
   },
   created() {
     this.reloadContent();
-    this.action = vx.endpoint + "FileManager/uploadFile";
-    this.uploadHeaders = {};
-    this.file_upload_max_size = vx.file_upload_max_size;
   },
-  mounted() {
-    new PerfectScrollbar(this.$refs.fileContent);
-    feather.replace({
-      width: 14,
-      height: 14,
-    });
-  },
-
   watch: {
-    selectedPath() {
-      this.reloadContent();
-    },
-  },
-  computed: {
-    showSelectButton() {
-      if (this.selectedFile.length === 0) {
-        return false;
-      }
-
-      if (this.selectedFile.length > 1 && !this.multiple) {
-        return false;
-      }
-
-      return true;
-    },
-    showLevelUp() {
-      if (this.selectedPath == "") {
-        return false;
-      }
-      return true;
+    async selectedFolder(val) {
+      let { data } = await vx.get("/FileManager/listContents", {
+        params: {
+          path: val,
+        },
+      });
+      this.files = data.files;
     },
   },
   methods: {
-    async moveSelectedTo(selectedNode) {
-      if (!selectedNode) return;
-      await this.$confirm(`Move selected file to ${selectedNode.path}?`);
-
-      this.showSelectFolder = false;
-
-      for (let file of this.selectedFile) {
-        await vx.post("/FileManager/moveFile", {
-          path: file,
-          target: selectedNode.path,
-        });
-      }
-
-      this.selectedFile = [];
-      this.reloadContent();
+    onSelectFolder(target) {
+      console.log(target);
     },
-    allowDrop(draggingNode, dropNode, type) {
-      if (type == "inner") return true;
-      return false;
-    },
-    async handleDrop(draggingNode, dropNode) {
-      try {
-        await this.$confirm(
-          `Moving ${draggingNode.data.path} to ${dropNode.data.path}`,
-          {
-            type: "warning",
-          }
-        );
-        await this.moveFolder(draggingNode.data.path, dropNode.data.path);
-
-        //reload target
-        let node = this.$refs.tree.getNode(dropNode.data.path);
-        node.loaded = false;
-        node.expand();
-      } catch (e) {
-        let data = draggingNode.data;
-        let pNode = this.$refs.tree.getNode(data.location);
-        pNode.loaded = false;
-        pNode.expand();
-      }
-    },
-    handleDragEnd(draggingNode, dropNode, dropType, ev) {
-      console.log("drop end");
-      return;
-      console.log(
-        "tree drag end: ",
-        draggingNode,
-        dropNode && dropNode.label,
-        dropType,
-        ev
-      );
-      console.log(ev);
-      ev.preventDefault();
-
-      return false;
-    },
-    onSearch() {
-      this.$nextTick(this.reloadContent);
-    },
-    onLevelUp() {
-      console.log(this.parentPath);
-      this.folderClicked(this.parentPath);
-    },
-    folderClicked(path) {
-      this.$refs.tree.setCurrentKey(path);
-      this.selectedPath = path;
-    },
-    //file clicked
-
-    selectClicked() {
-      this.$emit("input", this.selectedFile);
-    },
-    inputFile(path) {
-      this.$emit("input", path);
-    },
-    onErrorUpload(err) {
-      console.log(err);
-      this.$message.error("upload failed!");
-    },
-    onSuccessUpload(response, file, fileList) {
-      console.log("upload success", response.data.path, file, fileList);
-      this.nextSelectedFiles.push(response.data.path);
-
-      this.reloadContent();
-      //this.$refs.uploads.clearFiles();
-    },
-    async listFiles(type) {
-      this.type = type;
-      this.reloadContent();
-    },
-    deleteSelected() {
-      this.$confirm("Delete?", { type: "warning" }).then(async () => {
-        for (let p of this.selectedFolder) {
-          await vx.post("/FileManager/deleteFolder", {
-            path: p,
-          });
-          await this.$refs.tree.remove(p);
-        }
-
-        for (let file of this.selectedFile) {
-          await vx.post("/FileManager/deleteFile", {
-            path: file,
-          });
-        }
-        this.selectedFolder = [];
-        this.selectedFile = [];
-        this.reloadContent();
-      });
-    },
-    selectFolder(path) {
-      this.selectedFolder.push(path);
-    },
-    unselectFolder(path) {
-      this.selectedFolder = this.selectedFolder.filter((s) => s != path);
-    },
-    addNew(command) {
-      let current_node = this.$refs.tree.getCurrentNode();
-      if (!current_node) {
-        this.$message.warning("Please select folder");
-        return;
-      }
-
-      if (command == "file") {
-        this.file_uploader = true;
-      }
-      if (command == "folder") {
-        this.$prompt("Please input new folder name").then(async ({ value }) => {
-          let { data } = await vx.post("/FileManager/createFolder", {
-            path: this.selectedPath + "/" + value,
-          });
-
-          this.$refs.tree.append(data, this.$refs.tree.getCurrentNode());
-          await this.reloadContent();
-        });
-      }
-    },
-    async loadNode(node, resolve) {
-      if (node.level === 0) {
-        /*       let { data } = await vx.get("FileManager/listDirectory", {
-          params: {
-            path: this.base,
-          },
-        });
-        console.log(data); */
-
-        resolve([
-          {
-            label: "My storage",
-            path: this.base,
-          },
-        ]);
-
-        this.$nextTick(() => {
-          this.$refs.tree.setCurrentKey(this.base);
-        });
-
-        return;
-      }
-
+    async onLazyLoad({ node, key, done, fail }) {
       let { data } = await vx.get("/FileManager/listDirectory", {
         params: {
-          path: node.data.path,
+          path: node.path,
         },
       });
 
-      return resolve(data);
-    },
-    handleNodeClick(data) {
-      this.type = null;
-      this.selectedPath = data.path;
-      this.selectedNode = data;
-      this.selectedFolder = [];
+      data.map((item) => {
+        item.lazy = true;
+        return item;
+      });
+      done(data);
     },
     async reloadContent() {
       this.file_uploader = false;
@@ -697,55 +334,57 @@ export default {
         }
       }
 
+      console.log(this.files);
+
       //this.nextSelectedFiles = [];
 
-      console.log(this.selectedFile);
-
-      this.folders = data.folders;
-    },
-    async deleteFile(file) {
-      await vx.post("/FileManager/deleteFile", {
-        path: file,
+      this.folders = data.folders.map((f) => {
+        f.lazy = true;
+        return f;
       });
-      this.reloadContent();
-    },
-    async renameFile(data) {
-      let resp = (await vx.post("/FileManager/renameFile", data)).data;
-      if (resp.error) {
-        this.$message.error(resp.error.message);
-      } else {
-        this.reloadContent();
-      }
-    },
-    async duplicateFile(path) {
-      await vx.post("/FileManager/duplicateFile", {
-        path,
-      });
-      this.reloadContent();
-    },
-    async deleteFolder(path) {
-      await vx.post("/FileManager/deleteFolder", {
-        path,
-      });
-      this.reloadContent();
-      this.$refs.tree.remove(path);
-    },
-    async renameFolder(data) {
-      let newNode = (await vx.post("/FileManager/renameFolder", data)).data;
-      this.reloadContent();
-      this.$refs.tree.remove(data.path);
-      this.$refs.tree.append(newNode, this.selectedNode);
-    },
-    async moveFolder(path, target) {
-      let { data } = await vx.post("/FileManager/moveFolder", {
-        path,
-        target,
-      });
-      if (data.error) {
-        this.$alert(data.error.message, { type: "error" });
-      }
-      this.reloadContent();
     },
   },
 };
 </script>
+
+<style >
+.vx-file-manager .q-tree__node--selected {
+  border-radius: 0 24px 24px 0;
+  background-color: #e8f0fe;
+}
+</style>
+
+<style lang="sass">
+.GNL
+
+  &__toolbar
+    height: 64px
+
+  &__toolbar-input
+    width: 55%
+
+  &__drawer-item
+    line-height: 24px
+    border-radius: 0 24px 24px 0
+    margin-right: 12px
+
+    .q-item__section--avatar
+      .q-icon
+        color: #5f6368
+
+    .q-item__label
+      color: #3c4043
+      letter-spacing: .01785714em
+      font-size: .875rem
+      font-weight: 500
+      line-height: 1.25rem
+
+  &__drawer-footer-link
+    color: inherit
+    text-decoration: none
+    font-weight: 500
+    font-size: .75rem
+
+    &:hover
+      color: #000
+</style>

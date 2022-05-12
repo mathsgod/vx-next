@@ -57,16 +57,5 @@ export default {
       }
     }
   },
-
-  watch: {
-    $route(to, from) {
-      for (let a of window.apps) {
-        a.unmount();
-      }
-      
-      
-    },
-  },
 };
 </script>
-

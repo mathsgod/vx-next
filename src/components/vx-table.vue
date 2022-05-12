@@ -78,11 +78,12 @@ import { RefreshRight, Search } from "@element-plus/icons-vue";
     </el-table>
 
     <template v-if="pagination">
-      <div class="d-flex mx-0 row">
-        <div class="col-sm-12 col-md-6 align-self-center">
+      <div class="row q-py-md">
+        <div>
           {{ $t("vx-table-message", [info.from, info.to, info.total]) }}
         </div>
-        <div class="col-sm-12 col-md-6">
+        <q-space />
+        <div>
           <el-pagination
             hide-on-single-page
             background

@@ -1,5 +1,8 @@
 import './style/index.css';
 
+// Bootstrap
+import './scss/bootstrap.scss';
+
 // Import Quasar css
 import 'quasar/src/css/index.sass'
 
@@ -17,46 +20,8 @@ import * as Vue from 'vue';
 window.Vue = Vue;
 
 
-import VxApp from "./components/vx-app.vue";
-import VxForgotPassword from './pages/page-forgot-password.vue';
-import VxTest from "./components/vx-test.vue";
-import PageLogin from "./pages/page-login.vue";
-import PageResetPassword from "./pages/page-reset-password.vue";
 
-const routes = [
-    {
-        path: "/",
-        component: PageLogin
-    },
-    {
-        path: "/forgot_password",
-        component: VxForgotPassword
-    },
-    {
-        path: "/test",
-        component: VxTest
-    },
-    {
-        path: "/reset-password",
-        component: PageResetPassword
-    },
-    {
-        path: '/:module/:action',
-        component: VxApp
-    },
-    {
-        path: '/:module/:id/:action',
-        component: VxApp
-    },
-    {
-        path: '/:module',
-        component: VxApp
-    },
-    {
-        path: '/:catchAll(.*)',
-        component: VxApp
-    },
-];
+import routes from "./routes.js";
 
 import { createRouter, createWebHistory } from 'vue-router';
 const router = createRouter({
@@ -150,7 +115,7 @@ let init_vue = function (element) {
 
         app.mount(node.parentNode);
 
-        //window.apps.push(app);
+        window.apps.push(app);
     });
 
 }

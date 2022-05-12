@@ -1,6 +1,7 @@
 <script setup>
 import AuthLoginBasic from "./auth-login-basic.vue";
 import PageLoginV2 from "./page-login-v2.vue";
+//import "../scss/bootstrap.scss";
 </script>
 <template>
   <div>
@@ -8,6 +9,7 @@ import PageLoginV2 from "./page-login-v2.vue";
     <page-login-v2 v-if="version == 'v2'"></page-login-v2>
   </div>
 </template>
+
 
 <script>
 export default {

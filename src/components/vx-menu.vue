@@ -15,7 +15,7 @@
     </q-list>
   </q-expansion-item>
   <q-list v-else class="menu-list">
-    <q-item :to="value.link">
+    <q-item :to="value.link" v-ripple>
       <q-item-section avatar>
         <q-icon :name="icon" />
       </q-item-section>
@@ -28,10 +28,11 @@
 
 <style scoped>
 .menu-list .q-item {
-  border-radius: 0 32px 32px 0;
+  border-radius: 4px 32px 32px 4px;
 }
 .menu-list .q-router-link--exact-active {
-  background-color: var(--q-primary);
+  
+  background: linear-gradient(118deg,var(--q-primary),rgba(115,103,240,.7));
   color: #fff;
 }
 </style>
@@ -47,14 +48,13 @@ export default {
     },
   },
   methods: {
-    isOpen() {
-      if (!this.value.submenu) return false;
+    isOpenSubmenu(menu) {
+      if (!menu.submenu) return false;
 
-      //get module path
       let p = this.$route.path.split("/");
       if (p.length >= 2) {
         let module = p[1];
-        if (this.value.name == module) {
+        if (menu.name == module) {
           return true;
         }
       }
@@ -65,7 +65,14 @@ export default {
         return true;
       }
 
+      for (let m of menu.submenu) {
+        if (this.isOpenSubmenu(m)) return true;
+      }
       return false;
+    },
+    isOpen() {
+      if (!this.value.submenu) return false;
+      return this.isOpenSubmenu(this.value);
     },
   },
 };
