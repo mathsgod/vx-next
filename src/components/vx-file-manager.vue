@@ -98,6 +98,7 @@ function toggleLeftDrawer() {
           outlined
           dense
           v-model="search"
+          @keyup.enter="submitSearch"
           color="bg-grey-7 shadow-1"
           placeholder="Search for file name"
         >
@@ -216,8 +217,8 @@ function toggleLeftDrawer() {
         </q-breadcrumbs>
         <q-space></q-space>
 
-        <q-btn flat round icon="o_drive_file_move">
-          <VxFileManagerMove @input="moveToFolder($event)" />
+        <q-btn flat round icon="o_drive_file_move" v-if="selected.length > 0">
+          <VxFileManagerMove @input:folder="moveToFolder($event)" />
         </q-btn>
 
         <q-btn
@@ -399,6 +400,7 @@ export default {
       grid: false,
       fileFolders: [],
       preview: null,
+      search: "",
     };
   },
   created() {
@@ -431,6 +433,9 @@ export default {
     },
   },
   watch: {
+    search() {
+      console.log(this.search);
+    },
     async uploadFiles() {
       if (this.uploadFiles.length > 0) {
         for (let file of this.uploadFiles) {
@@ -455,6 +460,12 @@ export default {
     },
   },
   methods: {
+    submitSearch() {
+      console.log("submit search");
+      this.search_text = this.search;
+      this.reloadContent();
+    },
+
     moveToFolder(folder) {
       this.$q
         .dialog({
@@ -469,7 +480,6 @@ export default {
 
           this.reloadContent();
         });
-        
     },
     deleteSelected() {
       this.$q

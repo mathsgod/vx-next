@@ -2,22 +2,27 @@
 import { Check } from "@element-plus/icons-vue";
 </script>
 <template>
-  <el-card v-loading="loading">
-    <el-form
-      label-width="auto"
-      @submit.prevent
-      :model="form"
-      ref="form1"
-      class="vx-form row"
-      :size="size"
-    >
-      <slot v-bind:form="form"></slot>
-    </el-form>
-    <el-button @click="onSubmit()" :icon="Check" type="primary"
-      >Submit</el-button
-    >
-    <el-button @click="onBack">Back</el-button>
-  </el-card>
+  <q-card v-loading="loading" flat bordered>
+    <q-card-section>
+      <el-form
+        label-width="auto"
+        :label-position="labelPosition"
+        @submit.prevent
+        :model="form"
+        ref="form1"
+        class="vx-form row "
+        :size="size"
+      >
+        <slot v-bind:form="form"></slot>
+      </el-form>
+    </q-card-section>
+    <q-card-actions>
+      <el-button @click="onSubmit()" :icon="Check" type="primary"
+        >Submit</el-button
+      >
+      <el-button @click="onBack">Back</el-button>
+    </q-card-actions>
+  </q-card>
 </template>
 <script>
 export default {
@@ -43,6 +48,11 @@ export default {
       form: this.data,
       loading: false,
     };
+  },
+  computed: {
+    labelPosition() {
+      return this.$q.screen.lt.sm ? "top" : "right";
+    },
   },
 
   methods: {

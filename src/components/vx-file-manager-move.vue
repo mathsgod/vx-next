@@ -66,7 +66,7 @@
       </template>
 
       <q-card-actions>
-        <q-btn flat dense @click="mode = 'create'">
+        <q-btn flat dense @click="mode = 'create'" :disable="mode == 'create'">
           <q-icon name="create_new_folder"></q-icon>
         </q-btn>
         <q-space></q-space>
@@ -84,7 +84,7 @@
           v-if="selected && mode == 'move'"
           @click="
             $refs.menu.hide();
-            $emit('input', selected);
+            $emit('input:folder', selected);
           "
         ></q-btn>
       </q-card-actions>
@@ -99,7 +99,7 @@ import { createFolder } from "./file-manager.js";
 export default {
   data() {
     return {
-      selected: null,
+      selected: "/",
       folder: null,
       folders: [],
       parent: null,
@@ -107,8 +107,6 @@ export default {
       newFolder: null,
     };
   },
-  async created() {},
-
   watch: {
     async folder() {
       let { data } = await listContents(this.folder);

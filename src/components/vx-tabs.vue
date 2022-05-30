@@ -1,39 +1,57 @@
 <script>
-import { getCurrentInstance, h, nextTick } from "vue";
-import { ElTabs, ElTabPane } from "element-plus";
+import { h, withDirectives } from "vue";
+import { QTabs, QTab } from "quasar";
+
 export default {
+  data() {
+    return {
+      modelValue: null,
+      loading: false,
+    };
+  },
   render() {
     let l = this.$slots.default().map((item) => {
-      return h(ElTabPane, { ...item.props, ...{ ref: "tabPane" } });
+      return h(QTab, item.props);
     });
 
-    return h(
-      ElTabs,
-      {
-        onTabClick: this.onTabClick,
-      },
-      l
-    );
+    return [
+      h(
+        QTabs,
+        {
+          modelValue: this.modelValue,
+          narrowIndicator: true,
+          indicatorColor: "primary",
+          align: "left",
+          "onUpdate:modelValue": (value) => {
+            this.modelValue = value;
+            let tab = l.find((item) => {
+              return item.props.name === value;
+            });
+
+            this.loadContent(tab.props.link);
+          },
+        },
+        l
+      ),
+
+      h("div", {
+        ref: "content",
+      }),
+    ];
   },
+
   async mounted() {
     //find first
     let first = this.$slots.default()[0];
 
     if (first) {
-      this.loadContent(
-        first.props.link,
-        this.$el.querySelector(".el-tabs__content div")
-      );
+      this.loadContent(first.props.link);
+      this.modelValue = first.props.name;
     }
   },
   methods: {
-    async onTabClick(pane, ev) {
-      console.log(pane);
-
-      window.$(pane.instance.vnode.el).empty();
-      await this.loadContent(pane.instance.attrs.link, pane.instance.vnode.el);
-    },
-    async loadContent(url, el) {
+    async loadContent(url) {
+      window.$(this.$refs.content).empty();
       let link;
       if (url[0] != "/") {
         link = this.$route.path + "/" + url;
@@ -53,7 +71,7 @@ export default {
           return;
         }
 
-        window.$(el).html(data);
+        window.$(this.$refs.content).html(data);
       } catch (e) {
         this.loading = false;
         this.$alert(e, { type: "error" });

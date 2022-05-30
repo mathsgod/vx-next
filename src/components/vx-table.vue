@@ -2,64 +2,65 @@
 import { RefreshRight, Search } from "@element-plus/icons-vue";
 </script>
 <template>
-  <el-card :body-style="{ padding: '1rem' }" :header="header">
-    <el-collapse v-if="searchable">
-      <el-collapse-item name="search">
-        <template v-slot:title>
-          <el-icon> <search /> </el-icon>
-          &nbsp;&nbsp;{{ $t("Search") }}
-        </template>
+  <q-card :body-style="{ padding: '1rem' }" :header="header" flat bordered>
+    <q-card-section>
+      <el-collapse v-if="searchable">
+        <el-collapse-item name="search">
+          <template v-slot:title>
+            <el-icon> <search /> </el-icon>
+            &nbsp;&nbsp;{{ $t("Search") }}
+          </template>
 
-        <slot
-          name="search"
-          v-bind:search="search"
-          v-bind:on-search="onSearch"
-          :size="size"
-        ></slot>
+          <slot
+            name="search"
+            v-bind:search="search"
+            v-bind:on-search="onSearch"
+            :size="size"
+          ></slot>
 
-        <div class="ml-2 mr-2">
-          <el-button
-            @click="onSearch"
-            :size="size"
-            type="primary"
-            v-t="'Search'"
-          ></el-button>
-          <el-button
-            @click="resetSearch"
-            :size="size"
-            v-t="$t('Reset')"
-          ></el-button>
+          <div class="ml-2 mr-2">
+            <el-button
+              @click="onSearch"
+              :size="size"
+              type="primary"
+              v-t="'Search'"
+            ></el-button>
+            <el-button
+              @click="resetSearch"
+              :size="size"
+              v-t="$t('Reset')"
+            ></el-button>
+          </div>
+        </el-collapse-item>
+      </el-collapse>
+      <div v-if="pagination" class="row q-py-md">
+        <div>
+          Show
+          <el-tooltip :content="$t('vx-per-page')" placement="top">
+            <el-select v-model="localPerPage" style="width: 70px" :size="size">
+              <el-option
+                v-for="(p, index) in pageLengthOption"
+                :value="p"
+                v-text="p"
+                :key="index"
+              ></el-option>
+            </el-select>
+          </el-tooltip>
+          entries
         </div>
-      </el-collapse-item>
-    </el-collapse>
+        <q-space />
 
-    <div v-if="pagination" class="row q-py-md">
-      <div>
-        Show
-        <el-tooltip :content="$t('vx-per-page')" placement="top">
-          <el-select v-model="localPerPage" style="width: 70px" :size="size">
-            <el-option
-              v-for="(p, index) in pageLengthOption"
-              :value="p"
-              v-text="p"
-              :key="index"
-            ></el-option>
-          </el-select>
-        </el-tooltip>
-        entries
+        <div>
+          <el-tooltip :content="$t('Reload')" placement="top">
+            <el-button
+              @click="reload"
+              :icon="RefreshRight"
+              :size="size"
+            ></el-button>
+          </el-tooltip>
+        </div>
       </div>
-      <q-space />
-
-      <div>
-        <el-tooltip :content="$t('Reload')" placement="top">
-          <el-button
-            @click="reload"
-            :icon="RefreshRight"
-            :size="size"
-          ></el-button>
-        </el-tooltip>
-      </div>
-    </div>
+    </q-card-section>
 
     <el-table
       :size="size"
@@ -77,24 +78,26 @@ import { RefreshRight, Search } from "@element-plus/icons-vue";
       ></slot>
     </el-table>
 
-    <template v-if="pagination">
-      <div class="row q-py-md">
-        <div>
-          {{ $t("vx-table-message", [info.from, info.to, info.total]) }}
+    <q-card-section>
+      <template v-if="pagination">
+        <div class="row q-py-md">
+          <div>
+            {{ $t("vx-table-message", [info.from, info.to, info.total]) }}
+          </div>
+          <q-space />
+          <div>
+            <el-pagination
+              hide-on-single-page
+              background
+              layout="prev, pager, next"
+              :page-count="total"
+              @current-change="onCurrentChange"
+            />
+          </div>
         </div>
-        <q-space />
-        <div>
-          <el-pagination
-            hide-on-single-page
-            background
-            layout="prev, pager, next"
-            :page-count="total"
-            @current-change="onCurrentChange"
-          />
-        </div>
-      </div>
-    </template>
-  </el-card>
+      </template>
+    </q-card-section>
+  </q-card>
 </template>
 <script>
 export default {

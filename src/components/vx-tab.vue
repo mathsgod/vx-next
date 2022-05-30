@@ -1,5 +1,5 @@
 <template>
-  <el-tab-pane :label="label" :name="name"></el-tab-pane>
+  <q-tab :label="label" :name="name"></q-tab>
 </template>
 <script>
 export default {

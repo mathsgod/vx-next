@@ -111,7 +111,7 @@ window.apps = [];
 let init_vue = function (element) {
 
     if (!element.parentNode) return;
-    var nodes = element.parentNode.querySelectorAll("r-table, vue, vx-tabs, el-card, vx-form, vx-form-table, vx-view, el-table, el-link, router-link, vx-table, el-menu, vx-dialog-button");
+    var nodes = element.parentNode.querySelectorAll("r-table, vue, vx-tabs, q-card, el-card, vx-form, vx-form-table, vx-view, el-table, el-link, router-link, vx-table, el-menu, vx-dialog-button");
     nodes.forEach(node => {
 
         let app = createApp({
@@ -125,7 +125,13 @@ let init_vue = function (element) {
         app.use(ElementPlus)
         app.use(vx)
         app.use(VxComponent);
-        app.use(Quasar);
+        app.use(Quasar, {
+            plugins: {
+                LoadingBar,
+                Dialog,
+                Notify
+            }
+        });
 
 
         app.mount(node.parentNode);

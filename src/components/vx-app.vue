@@ -1,5 +1,5 @@
 <script setup>
-import { Quasar, Dark } from "quasar";
+import { Quasar, Dark, LoadingBar, useQuasar, Dialog, Notify } from "quasar";
 import ElementPlus from "element-plus";
 import VxCustomizer from "./vx-customizer.vue";
 import VxMenu from "./vx-menu.vue";
@@ -252,7 +252,13 @@ export default {
         app.use(ElementPlus);
         app.use(VxComponent);
         app.use(window.I18n);
-        app.use(Quasar);
+        app.use(Quasar, {
+          plugins: {
+            LoadingBar,
+            Dialog,
+            Notify,
+          },
+        });
         app.mount(this.$refs.content);
 
         window.apps.push(app);
