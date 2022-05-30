@@ -5,7 +5,7 @@
     :icon="icon"
     :default-opened="isOpen()"
   >
-    <q-list class="q-pl-lg">
+    <q-list class="q-pl-md">
       <VxMenu
         ref="menu"
         v-for="(m, index) in value.submenu"

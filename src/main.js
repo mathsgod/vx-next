@@ -8,6 +8,7 @@ import 'quasar/src/css/index.sass'
 
 // Import icon libraries
 import '@quasar/extras/material-icons/material-icons.css'
+import '@quasar/extras/material-icons-outlined/material-icons-outlined.css'
 import '@quasar/extras/fontawesome-v6/fontawesome-v6.css'
 
 
@@ -50,11 +51,13 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 }
 
 
-import { Quasar, Dark, LoadingBar, useQuasar } from 'quasar'
+import { Quasar, Dark, LoadingBar, useQuasar, Dialog, Notify } from 'quasar'
 window.Dark = Dark;
 app.use(Quasar, {
     plugins: {
-        LoadingBar
+        LoadingBar,
+        Dialog,
+        Notify
     }, // import Quasar plugins and add here,
     // src/css/quasar.variables.sass
 

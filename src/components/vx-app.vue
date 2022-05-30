@@ -144,12 +144,6 @@ export default {
     async $route(to) {
       this.$vx.setRoute(to);
       this.loadURL(to.fullPath);
-
-      if (this.$route.matched.length > 1) {
-        this.hasComponent = true;
-      } else {
-        this.hasComponent = false;
-      }
     },
   },
   async mounted() {
@@ -209,7 +203,6 @@ export default {
       }
       window.apps = [];
 
-      this.loading = true;
       let content_el = this.$refs.content;
       while (content_el.firstChild) {
         content_el.removeChild(content_el.firstChild);
@@ -217,7 +210,11 @@ export default {
 
       this.title = path.split("/").pop();
 
-      if (this.hasComponent) {
+      //check the route is in routes record
+      let paths = this.$router.getRoutes().map((r) => r.path);
+
+      paths = paths.filter((p) => p != "/User");
+      if (paths.includes(this.$route.path)) {
         return;
       }
 

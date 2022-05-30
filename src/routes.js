@@ -2,7 +2,6 @@ import PageLogin from "./pages/page-login.vue";
 import PageResetPassword from "./pages/page-reset-password.vue";
 import VxApp from "./components/vx-app.vue";
 import VxForgotPassword from './pages/page-forgot-password.vue';
-import VxTest from "./components/vx-test.vue";
 
 export default [
     {
@@ -15,7 +14,7 @@ export default [
     },
     {
         path: "/test",
-        component: VxTest
+        component: import("./components/vx-test.vue")
     },
     {
         path: "/reset-password",

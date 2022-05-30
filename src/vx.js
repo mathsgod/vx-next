@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { default as _axios } from 'axios';
 import { useRegistration } from '@web-auth/webauthn-helper';
 import { useLogin } from '@web-auth/webauthn-helper';
 import package_json from './../package.json';
@@ -37,11 +37,11 @@ class VX {
             headers["vx-view-as"] = localStorage.getItem("vx-view-as");
         }
 
-        axios.defaults.validateStatus = function () {
+        _axios.defaults.validateStatus = function () {
             return true;
         };
 
-        this.axios = axios.create({
+        this.axios = _axios.create({
             withCredentials: true,
             baseURL: config.endpoint,
             headers: headers
@@ -389,11 +389,13 @@ class VX {
 
 }
 
+let vx = new VX();
+
 export default {
+
     install(app, options) {
 
-
-        app.config.globalProperties.$http = axios.create({});
+        //app.config.globalProperties.$http = _axios.create({});
         /*         Vue.prototype.$http = axios.create({
                     //withCredentials: true
                 });
@@ -405,10 +407,12 @@ export default {
             return;
         }
 
-        let vx = new VX();
+
         app.config.globalProperties.$vx = vx;
 
         window.vx = vx;
-    }
 
+    },
 }
+export { vx }
+
