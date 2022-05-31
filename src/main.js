@@ -4,7 +4,7 @@ import './style/index.css';
 import './scss/bootstrap.scss';
 
 // Import Quasar css
-import 'quasar/src/css/index.sass'
+import "./scss/quasar.scss";
 
 // Import icon libraries
 import '@quasar/extras/material-icons/material-icons.css'

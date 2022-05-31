@@ -1,0 +1,8 @@
+// Max width at which point
+// current size ends
+$breakpoint-xs: 575px !default;
+$breakpoint-sm: 767px !default;
+$breakpoint-md: 991px !default;
+$breakpoint-lg: 1199px !default;
+
+@import 'quasar/src/css/index.sass';

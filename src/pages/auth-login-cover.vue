@@ -1,5 +1,5 @@
 <template>
-  <div class="auth-wrapper auth-v2">
+  <div class="auth-wrapper auth-cover">
     <div class="auth-inner row m-0">
       <!-- Brand logo--><a
         class="brand-logo"
@@ -12,8 +12,7 @@
           style="height: 40px"
           fit="contain"
         ></el-image>
-
-        <h2 class="brand-text text-primary ml-1">{{ company }}</h2>
+        <h6 v-else class="brand-text text-primary ml-1">{{ company }}</h6>
       </a>
       <!-- /Brand logo-->
       <!-- Left Text-->
@@ -32,51 +31,47 @@
       <!-- Login-->
       <div class="d-flex col-lg-4 align-items-center auth-bg px-2 p-lg-5">
         <div class="col-12 col-sm-8 col-md-6 col-lg-12 px-xl-2 mx-auto">
-          <h4 class="card-title mb-1">Welcome to {{ company }}! 👋</h4>
+          <h6 class="card-title mb-1">Welcome to {{ company }}! 👋</h6>
           <p class="card-text mb-2">
             Please sign-in to your account and start the adventure
           </p>
           <el-form
-            class="auth-login-form mt-2 small-label"
+            class="auth-login-form"
             :model="form"
             ref="form1"
+            label-position="top"
           >
-            <el-form-item label="Username" required prop="username">
-              <el-input v-model="form.username"></el-input>
-            </el-form-item>
-            <el-form-item label="Password" required prop="password">
-              <el-input
-                v-model="form.password"
-                type="password"
-                show-password
-              ></el-input>
-            </el-form-item>
+            <el-form :model="form" ref="form1" label-position="top">
+              <el-form-item label="Username" required prop="username">
+                <el-input v-model="form.username" autofocus></el-input>
+              </el-form-item>
 
-            <el-form-item label="Code" required prop="code" v-if="need_code">
-              <el-input v-model="form.code"></el-input>
-            </el-form-item>
+              <el-form-item label="Password" required prop="password">
+                <el-input
+                  v-model="form.password"
+                  type="password"
+                  show-password
+                  @keyup.enter="submit()"
+                >
+                  ></el-input
+                >
+              </el-form-item>
+
+              <el-form-item label="Code" required prop="code" v-if="need_code">
+                <el-input v-model="form.code"></el-input>
+              </el-form-item>
+            </el-form>
 
             <div class="form-group">
               <div class="d-flex justify-content-between">
-                <router-link to="/forgot_password"
-                  ><small>Forgot Password?</small></router-link
+                <el-link @click="$router.push('/forgot_password')"
+                  >Forgot Password?</el-link
                 >
               </div>
             </div>
 
             <div class="form-group" v-if="allow_remember_me">
-              <div class="custom-control custom-checkbox">
-                <input
-                  class="custom-control-input"
-                  id="remember-me"
-                  type="checkbox"
-                  tabindex="3"
-                  v-model="remember_me"
-                />
-                <label class="custom-control-label" for="remember-me">
-                  Remember Me</label
-                >
-              </div>
+              <q-checkbox v-model="remember_me" label="Remember Me" />
             </div>
 
             <el-row :gutter="10" class="mb-50" v-if="bio_login">
@@ -97,13 +92,9 @@
                 </button>
               </el-col>
             </el-row>
-            <button
-              class="btn btn-primary btn-block mb-50"
-              @click.prevent="submit()"
-              v-else
-            >
+            <el-button type="primary" class="w-100" @click="submit()" v-else>
               Sign in
-            </button>
+            </el-button>
           </el-form>
         </div>
       </div>
@@ -113,7 +104,6 @@
 </template>
 <script>
 export default {
-  name: "page-login-v2",
   data() {
     return {
       form: {},

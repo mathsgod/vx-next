@@ -1,15 +1,13 @@
 <script setup>
 import AuthLoginBasic from "./auth-login-basic.vue";
-import PageLoginV2 from "./page-login-v2.vue";
-//import "../scss/bootstrap.scss";
+import AuthLoginCover from "./auth-login-cover.vue";
 </script>
 <template>
   <div>
     <AuthLoginBasic v-if="version == 'v1'"></AuthLoginBasic>
-    <page-login-v2 v-if="version == 'v2'"></page-login-v2>
+    <AuthLoginCover v-if="version == 'v2'"></AuthLoginCover>
   </div>
 </template>
-
 
 <script>
 export default {

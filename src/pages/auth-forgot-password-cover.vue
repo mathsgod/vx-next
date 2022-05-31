@@ -1,5 +1,5 @@
 <template>
-  <div class="auth-wrapper auth-v2">
+  <div class="auth-wrapper auth-cover">
     <div class="auth-inner row m-0">
       <!-- Brand logo--><a
         class="brand-logo"
@@ -12,7 +12,7 @@
           style="height: 40px"
           fit="contain"
         ></el-image>
-        <h2 class="brand-text text-primary ml-1">{{ company }}</h2>
+        <h6 v-else class="brand-text text-primary ml-1">{{ company }}</h6>
       </a>
       <!-- /Brand logo-->
       <!-- Left Text-->
@@ -29,18 +29,15 @@
       </div>
       <!-- /Left Text-->
       <!-- Forgot password-->
+
       <div class="d-flex col-lg-4 align-items-center auth-bg px-2 p-lg-5">
-        <div class="col-12 col-sm-8 col-md-6 col-lg-12 px-xl-2 mx-auto">
-          <h4 class="card-title mb-1">Forgot Password? 🔒</h4>
-          <p class="card-text mb-2">
+        <div class="p-2">
+          <h6 class="mb-1">Forgot Password? 🔒</h6>
+          <p class="mb-2">
             Enter your username and email and we'll send you instructions to
             reset your password
           </p>
-          <el-form
-            :model="form"
-            ref="form1"
-            class="auth-forgot-password-form mt-2 small-label"
-          >
+          <el-form :model="form" ref="form1" label-position="top">
             <el-form-item label="Username" required prop="username">
               <el-input v-model="form.username"></el-input>
             </el-form-item>
@@ -52,14 +49,14 @@
               ></el-input>
             </el-form-item>
 
-            <button class="btn btn-primary btn-block" @click.prevent="submit">
+            <el-button type="primary" @click="submit" class="w-100">
               Send reset link
-            </button>
+            </el-button>
           </el-form>
           <p class="text-center mt-2">
-            <router-link to="/">
-              <vx-icon name="chevron-left"></vx-icon> Back to login</router-link
-            >
+            <el-link @click="$router.push('/')">
+              <q-icon name="arrow_back" /> Back to login
+            </el-link>
           </p>
         </div>
       </div>

@@ -1,9 +1,9 @@
 <template>
-  <div class="auth-wrapper auth-v1 px-2">
+  <div class="auth-wrapper auth-basic px-2">
     <div class="auth-inner py-2">
       <!-- Forgot Password v1 -->
-      <div class="card mb-0">
-        <div class="card-body">
+      <q-card>
+        <q-card-section>
           <a
             :href="$vx.config['company-url']"
             class="brand-logo"
@@ -18,19 +18,13 @@
             <h2 v-else class="brand-text text-primary ml-1">{{ company }}</h2>
           </a>
 
-          <h4 class="card-title mb-1">Forgot Password? 🔒</h4>
-          <p class="card-text mb-2">
+          <h6 class="mb-1">Forgot Password? 🔒</h6>
+          <p class="mb-2">
             Enter your username and email and we'll send you instructions to
             reset your password
           </p>
 
-          <el-form
-            ref="form1"
-            :model="form"
-            class="auth-forgot-password-form mt-2 small-label"
-            action="page-auth-reset-password-v1.html"
-            method="POST"
-          >
+          <el-form ref="form1" :model="form" label-position="top">
             <el-form-item label="Username" required prop="username">
               <el-input v-model="form.username"></el-input>
             </el-form-item>
@@ -47,18 +41,19 @@
               ></el-input>
             </el-form-item>
 
-            <button class="btn btn-primary btn-block" @click.prevent="submit">
-              Send reset link
-            </button>
+            <el-button type="primary" @click="submit"
+              >Send reset link
+            </el-button>
           </el-form>
 
           <p class="text-center mt-2">
-            <router-link to="/">
-              <vx-icon name="chevron-left"></vx-icon> Back to login
-            </router-link>
+            <el-link @click="$router.push('/')">
+              <q-icon name="arrow_back"></q-icon> Back to login
+            </el-link>
           </p>
-        </div>
-      </div>
+        </q-card-section>
+      </q-card>
+
       <!-- /Forgot Password v1 -->
     </div>
   </div>

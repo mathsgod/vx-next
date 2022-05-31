@@ -1,5 +1,5 @@
 <template>
-  <div class="auth-wrapper auth-v2">
+  <div class="auth-wrapper auth-cover">
     <div class="auth-inner row m-0">
       <!-- Brand logo--><a
         class="brand-logo"
@@ -12,7 +12,7 @@
           style="height: 40px"
           fit="contain"
         ></el-image>
-        <h2 class="brand-text text-primary ml-1">{{ company }}</h2>
+        <h4 class="brand-text text-primary ml-1" v-else>{{ company }}</h4>
       </a>
       <!-- /Brand logo-->
       <!-- Left Text-->
@@ -31,17 +31,13 @@
       <!-- Reset password-->
       <div class="d-flex col-lg-4 align-items-center auth-bg px-2 p-lg-5">
         <div class="col-12 col-sm-8 col-md-6 col-lg-12 px-xl-2 mx-auto">
-          <h4 class="card-title mb-1">Reset Password 🔒</h4>
-          <p class="card-text mb-2">
+          <h6 class="mb-1">Reset Password 🔒</h6>
+          <p class="mb-2">
             Your new password must be different from previously used passwords
           </p>
 
-          <el-form
-            ref="form1"
-            :model="form"
-            class="auth-reset-password-form mt-2 small-label"
-          >
-            <el-form-item label="New Password" prop="pssword">
+          <el-form ref="form1" :model="form" class="mt-2" label-position="top">
+            <el-form-item label="New Password" prop="password" required>
               <el-input
                 type="password"
                 v-model="form.password"
@@ -50,7 +46,11 @@
               ></el-input>
             </el-form-item>
 
-            <el-form-item label="Confirm Password" prop="pssword">
+            <el-form-item
+              label="Confirm Password"
+              prop="confirm_password"
+              required
+            >
               <el-input
                 type="password"
                 v-model="form.confirm_password"
@@ -64,9 +64,9 @@
             >
           </el-form>
           <p class="text-center mt-2">
-            <router-link to="/">
-              <vx-icon name="chevron-left"></vx-icon> Back to login
-            </router-link>
+            <el-link @click="$router.push('/')">
+              <q-icon name="arrow_back" /> Back to login
+            </el-link>
           </p>
         </div>
       </div>

@@ -1,22 +1,25 @@
+<script setup>
+import AuthForgotPasswordBasic from "./auth-forgot-password-basic.vue";
+import AuthForgotPasswordCover from "./auth-forgot-password-cover.vue";
+</script>
 <template>
   <div>
-    <page-forgot-password-v1 v-if="version == 'v1'"></page-forgot-password-v1>
-    <page-forgot-password-v2 v-if="version == 'v2'"></page-forgot-password-v2>
+    <AuthForgotPasswordBasic v-if="version == 'v1'"></AuthForgotPasswordBasic>
+    <AuthForgotPasswordCover v-if="version == 'v2'"></AuthForgotPasswordCover>
   </div>
 </template>
 
 <script>
-import PageForgotPasswordV1 from "./page-forgot-password-v1.vue";
-import PageForgotPasswordV2 from "./page-forgot-password-v2.vue";
+import "../assets/css/pages/authentication.css";
+
 export default {
-  components: { PageForgotPasswordV1, PageForgotPasswordV2 },
   data() {
     return {
-      version: "v1",
+      version: "v2",
     };
   },
   created() {
-    this.version = this.$vx.config.login.version;
+    //this.version = this.$vx.config.login.version;
 
     this.logined = this.$vx.logined;
   },

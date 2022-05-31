@@ -28,7 +28,11 @@ export default {
               return item.props.name === value;
             });
 
-            this.loadContent(tab.props.link);
+            if (tab) {
+              this.loadContent(tab.props.link);
+            } else {
+              window.$(this.$refs.content).empty();
+            }
           },
         },
         l

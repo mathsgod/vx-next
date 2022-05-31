@@ -1,103 +1,97 @@
 <template>
   <div class="auth-wrapper auth-basic px-2">
-    <div class="auth-inner py-2">
+    <div class="auth-inner">
       <!-- Login v1 -->
-      <el-card>
-        <a :href="$vx.config['company-url']" class="brand-logo" target="_blank">
-          <el-image
-            v-if="$vx.config['company-logo']"
-            :src="$vx.config['company-logo']"
-            style="height: 40px"
-            fit="contain"
-          ></el-image>
-          <h2 v-else class="brand-text text-primary ml-1">{{ company }}</h2>
-        </a>
+      <q-card>
+        <q-card-section>
+          <a
+            :href="$vx.config['company-url']"
+            class="brand-logo"
+            target="_blank"
+          >
+            <el-image
+              v-if="$vx.config['company-logo']"
+              :src="$vx.config['company-logo']"
+              style="height: 40px"
+              fit="contain"
+            ></el-image>
+            <h2 v-else class="brand-text text-primary ml-1">{{ company }}</h2>
+          </a>
 
-        <h6 class="mb-1">Welcome to {{ company }}! 👋</h6>
-        <p class="card-text mb-2">
-          Please sign-in to your account and start the adventure
-        </p>
+          <h6 class="mb-1">Welcome to {{ company }}! 👋</h6>
+          <p class="card-text mb-2">
+            Please sign-in to your account and start the adventure
+          </p>
 
-        <el-form
-          :model="form"
-          ref="form1"
-          class="small-label"
-          label-position="top"
-        >
-          <el-form-item label="Username" required prop="username">
-            <el-input v-model="form.username" autofocus></el-input>
-          </el-form-item>
+          <el-form :model="form" ref="form1" label-position="top">
+            <el-form-item label="Username" required prop="username">
+              <el-input v-model="form.username" autofocus></el-input>
+            </el-form-item>
 
-          <el-form-item label="Password" required prop="password">
-            <el-input
-              v-model="form.password"
-              type="password"
-              show-password
-              @keyup.enter="submit()"
-            >
-              ></el-input
-            >
-          </el-form-item>
+            <el-form-item label="Password" required prop="password">
+              <el-input
+                v-model="form.password"
+                type="password"
+                show-password
+                @keyup.enter="submit()"
+              >
+                ></el-input
+              >
+            </el-form-item>
 
-          <el-form-item label="Code" required prop="code" v-if="need_code">
-            <el-input v-model="form.code"></el-input>
-          </el-form-item>
-        </el-form>
+            <el-form-item label="Code" required prop="code" v-if="need_code">
+              <el-input v-model="form.code"></el-input>
+            </el-form-item>
+          </el-form>
 
-        <div class="form-group">
-          <div class="d-flex justify-content-between">
-            <router-link to="/forgot_password">
-              <small>Forgot Password?</small>
-            </router-link>
+          <div class="form-group">
+            <div class="d-flex justify-content-between">
+              <el-link @click="$router.push('/forgot_password')"
+                >Forgot Password?</el-link
+              >
+            </div>
           </div>
-        </div>
 
-        <div class="form-group" v-if="allow_remember_me">
-          <div class="form-check">
-            <input
-              class="form-check-input"
-              type="checkbox"
-              id="remember-me"
-              tabindex="3"
-              v-model="remember_me"
-            />
-            <label class="form-check-label" for="remember-me">
-              Remember Me
-            </label>
+          <div class="form-group" v-if="allow_remember_me">
+            <q-checkbox v-model="remember_me" label="Remember Me" />
           </div>
-        </div>
 
-        <el-row :gutter="10" class="mb-50" v-if="bio_login">
-          <el-col :span="18">
-            <button class="btn btn-primary btn-block" @click.prevent="submit()">
-              Sign in
-            </button>
-          </el-col>
-          <el-col :span="6">
-            <button class="btn btn-primary btn-block" @click.prevent="bio()">
-              <i class="fas fa-fingerprint"></i>
-            </button>
-          </el-col>
-        </el-row>
-        <el-button type="primary"
-          class="btn btn-primary btn-block mb-50"
-          @click="submit()"
-          v-else
-        >
-          Sign in
-        </el-button>
+          <el-row :gutter="10" class="mb-50" v-if="bio_login">
+            <el-col :span="18">
+              <button
+                class="btn btn-primary btn-block"
+                @click.prevent="submit()"
+              >
+                Sign in
+              </button>
+            </el-col>
+            <el-col :span="6">
+              <button class="btn btn-primary btn-block" @click.prevent="bio()">
+                <i class="fas fa-fingerprint"></i>
+              </button>
+            </el-col>
+          </el-row>
+          <el-button
+            type="primary"
+            class="btn btn-primary btn-block mb-50"
+            @click="submit()"
+            v-else
+          >
+            Sign in
+          </el-button>
 
-        <div class="d-flex flex-column align-items-end">
-          <el-link @click="show_version = !show_version">version</el-link>
+          <div class="d-flex flex-column align-items-end">
+            <el-link @click="show_version = !show_version">version</el-link>
 
-          <div v-if="show_version">
-            <el-table :data="version" :show-header="false" size="mini">
-              <el-table-column prop="name"></el-table-column>
-              <el-table-column prop="value"></el-table-column>
-            </el-table>
+            <div v-if="show_version">
+              <el-table :data="version" :show-header="false" size="mini">
+                <el-table-column prop="name"></el-table-column>
+                <el-table-column prop="value" width="100px"></el-table-column>
+              </el-table>
+            </div>
           </div>
-        </div>
-      </el-card>
+        </q-card-section>
+      </q-card>
       <!-- /Login v1 -->
     </div>
   </div>

@@ -32,6 +32,16 @@ export default [
         path: '/:module',
         component: VxApp
     }, {
+        path: '/System/Module',
+        component: VxApp,
+        children: [
+            {
+                path: "builder",
+                component: import("./pages/System/Module/builder.vue"),
+            }
+        ]
+    },
+    {
         path: '/User',
         component: VxApp,
         children: [
