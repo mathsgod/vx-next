@@ -114,6 +114,8 @@ function toggleLeftDrawer() {
         </q-input>
 
         <q-space />
+
+        <q-btn v-if="showCloseButton" icon="close" flat round @click="$emit('close')"></q-btn>
       </q-toolbar>
     </q-header>
 
@@ -376,6 +378,11 @@ export default {
       type: String,
       default: "700px",
     },
+    defaultAction: {
+      default: "preview",
+      type: String,
+    },
+    showCloseButton: Boolean,
   },
   data() {
     return {
@@ -560,17 +567,20 @@ export default {
           this.reloadContent();
         });
     },
-
     onBreadcrumbClick(b) {
       this.folder = b.path;
     },
     onDblclickRow(evt, row, index) {
       if (row.type == "folder") {
         this.folder = row.path;
+        return;
+      }
+
+      if (row.type == "file") {
+        this.$emit("input", [row.path]);
       }
     },
     onClickRow(evt, row, index) {
-      console.log(row);
       this.preview = row;
     },
     findFolder(path, folders) {

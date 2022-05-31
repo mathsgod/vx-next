@@ -1,26 +1,22 @@
+<script setup>
+import VxFileManager from "./vx-file-manager.vue";
+</script>
 <template>
-  <div>
-    <el-input @focus="focusInput" v-model="localData" clearable></el-input>
+  <el-input @click="focusInput" v-model="localData" clearable></el-input>
 
-    <el-dialog
-      v-model="dialogVisible"
-      width="80%"
-      title="File manager"
-      top="2vh"
-    >
-      <vx-file-manager
-        @input="fileSelected($event)"
-        default-action="select"
-        :base="base"
-        :multiple="multiple"
-      ></vx-file-manager>
-    </el-dialog>
-  </div>
+  <q-dialog v-model="dialogVisible" full-width>
+    <VxFileManager
+      @input="fileSelected($event)"
+      default-action="select"
+      :base="base"
+      :multiple="multiple"
+      show-close-button
+      @close="close()"
+    />
+  </q-dialog>
 </template>
 <script>
-import vxFileManager from "./vx-file-manager.vue";
 export default {
-  components: { vxFileManager },
   props: {
     value: String,
     base: String,
@@ -38,6 +34,9 @@ export default {
     },
   },
   methods: {
+    close() {
+      this.dialogVisible = false;
+    },
     focusInput() {
       this.dialogVisible = true;
     },

@@ -7,6 +7,9 @@ export default [
     {
         path: "/",
         component: PageLogin
+    }, {
+        path: "/two-step-verification",
+        component: import("./pages/two-step-verification.vue")
     },
     {
         path: "/forgot_password",

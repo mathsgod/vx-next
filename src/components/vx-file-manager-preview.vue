@@ -1,8 +1,7 @@
 <template>
   <template v-if="canPreviewImage">
-    <q-img src="https://via.placeholder.com/300"></q-img>
+    <q-img :src="imagePath"></q-img>
   </template>
-
   <q-list>
     <q-item>
       <q-item-section>
@@ -26,7 +25,11 @@ export default {
   props: {
     value: Object,
   },
+
   computed: {
+    imagePath() {
+      return vx.endpoint + `photo/0/${this.value.path}?w=200`;
+    },
     canPreviewImage() {
       if (this.value.type == "folder") return false;
 

@@ -5,6 +5,7 @@ import VxTab from './vx-tab.vue';
 import VxIcon from './vx-icon.vue';
 import VxAvatar from './vx-avatar.vue';
 import VxFileManager from './vx-file-manager.vue';
+import VxFileInput from './vx-file-input.vue';
 
 
 export default {
@@ -17,5 +18,6 @@ export default {
         app.component("vx-icon", VxIcon);
         app.component("vx-avatar", VxAvatar);
         app.component("vx-file-manager", VxFileManager);
+        app.component("vx-file-input", VxFileInput);
     }
 }

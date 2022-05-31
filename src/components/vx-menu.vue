@@ -17,7 +17,7 @@
   <q-list v-else class="menu-list">
     <q-item :to="value.link" v-ripple>
       <q-item-section avatar>
-        <q-icon :name="icon" />
+        <q-icon :name="icon" size="xs" />
       </q-item-section>
       <q-item-section>
         <q-item-label v-text="value.label"></q-item-label>
@@ -31,8 +31,11 @@
   border-radius: 4px 32px 32px 4px;
 }
 .menu-list .q-router-link--exact-active {
-  
-  background: linear-gradient(118deg,var(--q-primary),rgba(115,103,240,.7));
+  background: linear-gradient(
+    118deg,
+    var(--q-primary),
+    rgba(115, 103, 240, 0.7)
+  );
   color: #fff;
 }
 </style>
