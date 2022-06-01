@@ -11,6 +11,8 @@ import ElementPlus from 'element-plus'
 import { useDark, useToggle } from '@vueuse/core'
 
 
+import { Dark } from 'quasar'
+
 
 class VX {
     endpoint;
@@ -19,7 +21,7 @@ class VX {
         const isDark = useDark()
         const toggle = useToggle(isDark)
         toggle(value)
-        window.Dark.set(value);
+        Dark.set(value);
     }
 
     createApp(rootComponent) {
@@ -237,30 +239,58 @@ class VX {
 
         if (resp.status == 401) {
             await this.renewAccessToken();
-            return this.get(u, config);
+            return await this.axios.get(u, config);
         }
 
         return resp;
     }
 
-    post(url, data, config) {
+    async post(url, data, config) {
         let u = this.processUrl(url);
-        return this.axios.post(u, data, config);
+        let resp = await this.axios.post(u, data, config);
+
+        if (resp.status == 401) {
+            await this.renewAccessToken();
+            return await this.axios.post(u, data, config);
+        }
+
+        return resp;
     }
 
-    put(url, data, config) {
+    async put(url, data, config) {
         let u = this.processUrl(url);
-        return this.axios.put(u, data, config);
+        let resp = await this.axios.put(u, data, config);
+
+        if (resp.status == 401) {
+            await this.renewAccessToken();
+            return await this.axios.put(u, data, config);
+        }
+
+        return resp;
     }
 
-    patch(url, data, config) {
+    async patch(url, data, config) {
         let u = this.processUrl(url);
-        return this.axios.patch(u, data, config);
+        let resp = await this.axios.patch(u, data, config);
+
+        if (resp.status == 401) {
+            await this.renewAccessToken();
+            return await this.axios.patch(u, data, config);
+        }
+
+        return resp;
     }
 
-    delete(url, config) {
+    async delete(url, config) {
         let u = this.processUrl(url);
-        return this.axios.delete(u, config)
+        let resp = this.axios.delete(u, config);
+
+        if (resp.status == 401) {
+            await this.renewAccessToken();
+            return await this.axios.delete(u, config);
+        }
+
+        return resp;
     }
 
     async login(username, password, code) {
@@ -415,4 +445,19 @@ export default {
     },
 }
 export { vx }
+
+export function getLanguages() {
+    return vx.language;
+}
+
+export async function setLanguage(language) {
+    let { status } = await vx.post("/User/change-language", { language });
+    if (status == 204) {
+        vx.me.language = language;
+    }
+}
+
+export function getCurrentLanguage() {
+    return vx.getSelectedLanguage();
+}
 

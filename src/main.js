@@ -11,12 +11,9 @@ import '@quasar/extras/material-icons/material-icons.css'
 import '@quasar/extras/material-icons-outlined/material-icons-outlined.css'
 import '@quasar/extras/fontawesome-v6/fontawesome-v6.css'
 
-
-
 import { createApp } from 'vue';
 import * as Vue from 'vue';
 window.Vue = Vue;
-
 
 // app
 import App from './App.vue'
@@ -30,52 +27,9 @@ const router = createRouter({
 app.use(router)
 
 
-// element plus
-import ElementPlus from 'element-plus'
 //import 'element-plus/dist/index.css'
 import './scss/main.scss';
 
-app.use(ElementPlus)
-
-// element plus icons
-import * as ElementPlusIconsVue from '@element-plus/icons-vue'
-for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
-
-    //key to underscore
-    const keyUnderscore = key.replace(/([A-Z])/g, '_$1').toLowerCase();
-    //removing the first _
-    const keyUnderscore2 = keyUnderscore.replace(/^_/, '');
-    //replace _ to -
-    const keyUnderscore3 = keyUnderscore2.replace(/_/g, '-');
-    app.component("el-icon-" + keyUnderscore3, component)
-}
-
-
-import { Quasar, Dark, LoadingBar, useQuasar, Dialog, Notify } from 'quasar'
-window.Dark = Dark;
-app.use(Quasar, {
-    plugins: {
-        LoadingBar,
-        Dialog,
-        Notify
-    }, // import Quasar plugins and add here,
-    // src/css/quasar.variables.sass
-
-    config: {
-        brand: {
-            primary: '#7367f0',
-            secondary: '#82868b',
-            accent: '#7367f0',
-
-            dark: '#1d1d1d',
-
-            positive: '#28c76f',
-            negative: '#ea5455',
-            info: '#00cfe8',
-            warning: '#ff9f43'
-        }
-    }
-})
 
 // VX
 import vx from './vx';
@@ -84,6 +38,8 @@ app.use(vx);
 import VxComponent from './components/vx.js';
 app.use(VxComponent);
 
+import zhTW from 'element-plus/es/locale/lang/zh-tw'
+import en from 'element-plus/es/locale/lang/en';
 
 //i18n
 import { createI18n } from 'vue-i18n'
@@ -91,12 +47,8 @@ const i18n = createI18n({
     globalInjection: true,
     locale: 'en',
     messages: {
-        en: {
-            hello: 'hello!'
-        },
-        ja: {
-            hello: 'こんにちは！'
-        }
+        en: en,
+        "zh-hk": zhTW
     }
 });
 
@@ -122,17 +74,9 @@ let init_vue = function (element) {
 
         app.use(i18n)
         app.use(router)
-        app.use(ElementPlus)
+
         app.use(vx)
         app.use(VxComponent);
-        app.use(Quasar, {
-            plugins: {
-                LoadingBar,
-                Dialog,
-                Notify
-            }
-        });
-
 
         app.mount(node.parentNode);
 

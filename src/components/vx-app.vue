@@ -5,6 +5,9 @@ import VxCustomizer from "./vx-customizer.vue";
 import VxMenu from "./vx-menu.vue";
 import VxComponent from "./vx.js";
 import { ref } from "vue";
+import { getLanguages, setLanguage, getCurrentLanguage } from "./../vx.js";
+import { vx } from "./../vx.js";
+
 const leftDrawerOpen = ref(false);
 const rightDrawerOpen = ref(false);
 const toggleLeftDrawer = () => {
@@ -14,6 +17,7 @@ const toggleRightDrawer = () => {
   rightDrawerOpen.value = !rightDrawerOpen.value;
 };
 </script>
+
 <template>
   <q-layout view="hHh LpR lFr">
     <q-header bordered class="text-white" :class="headerColor">
@@ -21,6 +25,24 @@ const toggleRightDrawer = () => {
         <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
 
         <q-toolbar-title> {{ $vx.config.company }} </q-toolbar-title>
+
+        <q-btn flat dense :label="currentLanguage">
+          <q-menu>
+            <q-list>
+              <q-item
+                clickable
+                v-close-popup
+                v-for="(language, value) in getLanguages()"
+                :key="value"
+                @click="onChangeLanguage(value)"
+              >
+                <q-item-section>
+                  <q-item-label>{{ language }}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </q-btn>
 
         <q-btn flat round dense icon="person">
           <q-menu>
@@ -128,6 +150,7 @@ export default {
       headerColor: "bg-primary",
       title: "",
       loading: false,
+      currentLanguage: "",
     };
   },
   watch: {
@@ -148,6 +171,9 @@ export default {
   },
   async mounted() {
     await this.loadURL(this.$route.fullPath);
+
+    console.log(getCurrentLanguage());
+    this.currentLanguage = getCurrentLanguage();
   },
   computed: {
     breadcrumbs() {
@@ -190,6 +216,10 @@ export default {
     },
   },
   methods: {
+    async onChangeLanguage(value) {
+      await setLanguage(value);
+      window.self.location.reload();
+    },
     async logout() {
       await this.$vx.logout();
       this.$emit("logout");
@@ -197,6 +227,7 @@ export default {
     },
 
     async loadURL(path) {
+      vx.$route = this.$route;
       //unmount all
       for (let a of window.apps) {
         a.unmount();
@@ -249,16 +280,10 @@ export default {
 
         let m = await loadModule("/vue/test.vue", options);
         let app = createApp(m);
-        app.use(ElementPlus);
         app.use(VxComponent);
+
         app.use(window.I18n);
-        app.use(Quasar, {
-          plugins: {
-            LoadingBar,
-            Dialog,
-            Notify,
-          },
-        });
+
         app.mount(this.$refs.content);
 
         window.apps.push(app);
