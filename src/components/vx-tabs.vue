@@ -62,7 +62,7 @@ export default {
       } else {
         link = url;
       }
-      console.log("load link", link);
+      //console.log("load link", link);
       this.loading = true;
 
       try {

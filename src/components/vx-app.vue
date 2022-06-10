@@ -1,12 +1,19 @@
 <script setup>
 import { Quasar, Dark, LoadingBar, useQuasar, Dialog, Notify } from "quasar";
-import ElementPlus from "element-plus";
 import VxCustomizer from "./vx-customizer.vue";
 import VxMenu from "./vx-menu.vue";
 import VxComponent from "./vx.js";
 import { ref } from "vue";
-import { getLanguages, setLanguage, getCurrentLanguage } from "./../vx.js";
+import { setLanguage, getCurrentLanguage } from "./../vx.js";
 import { vx } from "./../vx.js";
+
+import { useRoute, useRouter } from "vue-router";
+const route = useRoute();
+const router = useRouter();
+
+if (vx.logined && route.path == "/") {
+  router.push(vx.me.default_page);
+}
 
 const leftDrawerOpen = ref(false);
 const rightDrawerOpen = ref(false);
@@ -32,12 +39,12 @@ const toggleRightDrawer = () => {
               <q-item
                 clickable
                 v-close-popup
-                v-for="(language, value) in getLanguages()"
-                :key="value"
-                @click="onChangeLanguage(value)"
+                v-for="language in languages"
+                :key="language.value"
+                @click="onChangeLanguage(language.value)"
               >
                 <q-item-section>
-                  <q-item-label>{{ language }}</q-item-label>
+                  <q-item-label>{{ language.name }}</q-item-label>
                 </q-item-section>
               </q-item>
             </q-list>
@@ -121,7 +128,10 @@ const toggleRightDrawer = () => {
               :to="breadcrumb.to"
             ></q-breadcrumbs-el>
           </q-breadcrumbs>
+          <q-space></q-space>
+          <q-btn icon="refresh" dense flat ripple @click="reloadContent" />
         </q-toolbar>
+
         <router-view></router-view>
         <div ref="content" v-loading="loading"></div>
 
@@ -139,6 +149,7 @@ const toggleRightDrawer = () => {
 
 <script>
 import { loadModule } from "vue3-sfc-loader";
+import { vx } from "./../vx.js";
 export default {
   data() {
     return {
@@ -151,7 +162,15 @@ export default {
       title: "",
       loading: false,
       currentLanguage: "",
+      languages: [],
     };
+  },
+  beforeRouteEnter(to, from, next) {
+    if (!vx.logined) {
+      next("/");
+      return false;
+    }
+    next();
   },
   watch: {
     "style.theme"(val) {
@@ -169,11 +188,13 @@ export default {
       this.loadURL(to.fullPath);
     },
   },
+  created() {
+    this.currentLanguage = getCurrentLanguage();
+    this.languages = this.$vx.getLanguages();
+    //    console.log(this.languages);
+  },
   async mounted() {
     await this.loadURL(this.$route.fullPath);
-
-    console.log(getCurrentLanguage());
-    this.currentLanguage = getCurrentLanguage();
   },
   computed: {
     breadcrumbs() {
@@ -184,21 +205,21 @@ export default {
         if (paths[paths.length - 1] == "view") {
           breadcrumbs.push({
             to: "/" + paths[1],
-            //label: this.$i18n.t(paths[1]),
-            label: paths[1],
+            label: this.$i18n.t(paths[1]),
+            //label: paths[1],
           });
         } else {
           if (paths.length == 4) {
             breadcrumbs.push({
               to: "/" + paths[1] + "/" + paths[2] + "/view",
-              //label: this.$i18n.t(paths[1]),
-              label: paths[1],
+              label: this.$i18n.t(paths[1]),
+              //label: paths[1],
             });
           } else {
             breadcrumbs.push({
               to: "/" + paths[1],
-              //label: this.$i18n.t(paths[1]),
-              label: paths[1],
+              label: this.$i18n.t(paths[1]),
+              //label: paths[1],
             });
           }
         }
@@ -216,6 +237,9 @@ export default {
     },
   },
   methods: {
+    reloadContent() {
+      this.loadURL(this.$route.fullPath);
+    },
     async onChangeLanguage(value) {
       await setLanguage(value);
       window.self.location.reload();
@@ -227,6 +251,7 @@ export default {
     },
 
     async loadURL(path) {
+      console.log("loadURL", path);
       vx.$route = this.$route;
       //unmount all
       for (let a of window.apps) {
@@ -250,17 +275,36 @@ export default {
       }
 
       this.loading = true;
-      let resp = await this.$vx.get(path, {
+      let { status, headers, data } = await this.$vx.get(path, {
         headers: {
           Accept: "text/vue,text/html",
         },
       });
       this.loading = false;
 
+      if (status == 403) {
+        this.$router.push("/");
+        return;
+      }
+
+      if (status >= 500) {
+        if (headers["content-type"].includes("text/html")) {
+          content_el.innerHTML = data;
+        } else if (headers["content-type"].includes("application/json")) {
+          if (data.error) {
+
+
+
+          }
+        }
+
+        return;
+      }
+
       let content = "";
       //chech content type is vue
-      if (resp.headers["content-type"].includes("text/vue")) {
-        content = resp.data;
+      if (headers["content-type"].includes("text/vue")) {
+        content = data;
 
         const options = {
           moduleCache: {
@@ -278,27 +322,22 @@ export default {
           },
         };
 
-        let m = await loadModule("/vue/test.vue", options);
+        let m = await loadModule("/vue.vue", options);
         let app = createApp(m);
         app.use(VxComponent);
-
         app.use(window.I18n);
-
         app.mount(this.$refs.content);
-
         window.apps.push(app);
 
         return;
       }
 
-      if (resp.headers["content-type"].includes("text/html")) {
-        content = resp.data;
+      if (headers["content-type"].includes("text/html")) {
+        content = data;
       } else {
-        resp = resp.data;
-
-        if (resp.status == 301 || resp.status == 302 || resp.status == 303) {
+        if (status == 301 || status == 302 || status == 303) {
           //redirect
-          this.$router.push(resp.location);
+          //this.$router.push(resp.location);
           return;
         }
       }

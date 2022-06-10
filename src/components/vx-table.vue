@@ -62,6 +62,7 @@ import { RefreshRight, Search } from "@element-plus/icons-vue";
       </div>
     </q-card-section>
 
+
     <el-table
       :size="size"
       :data="data"

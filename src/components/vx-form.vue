@@ -10,17 +10,17 @@ import { Check } from "@element-plus/icons-vue";
         @submit.prevent
         :model="form"
         ref="form1"
-        class="vx-form row "
+        class="vx-form row"
         :size="size"
       >
         <slot v-bind:form="form"></slot>
       </el-form>
     </q-card-section>
     <q-card-actions>
-      <el-button @click="onSubmit()" :icon="Check" type="primary"
-        >Submit</el-button
-      >
-      <el-button @click="onBack">Back</el-button>
+      <el-button @click="onSubmit()" :icon="Check" type="primary">{{
+        $t("Submit")
+      }}</el-button>
+      <el-button @click="onBack">{{ $t("Back") }}</el-button>
     </q-card-actions>
   </q-card>
 </template>

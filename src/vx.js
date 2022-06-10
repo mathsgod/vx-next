@@ -13,7 +13,6 @@ import { useDark, useToggle } from '@vueuse/core'
 
 import { Dark } from 'quasar'
 
-
 class VX {
     endpoint;
 
@@ -29,6 +28,8 @@ class VX {
         app.use(ElementPlus)
         return app;
     }
+
+
 
     async init(config) {
         this.accessToken = "";
@@ -75,9 +76,16 @@ class VX {
         this.me = data.me;
 
         this.navbar = data.navbar;
+        this.locale = data.locale;
 
         this.file_upload_max_size = data.file_upload_max_size;
-        this.i18n = window.i18n;
+
+        this.i18n = data.i18n;
+        this.i18n_en = data.i18n_en;
+        this.i18n_module = data.i18n_module;
+
+
+/*         this.i18n = window.i18n;
         this.i18n.locale = data.locale;
         let messages = this.i18n.getLocaleMessage(data.locale ?? "en");
         messages = { ...messages, ...data.i18n };
@@ -90,7 +98,7 @@ class VX {
 
         this.i18n_messages = messages;
         this.i18n_module_messages = data.i18n_module;
-        this.breakpoint = {
+ */        this.breakpoint = {
 
         };
 
@@ -313,6 +321,7 @@ class VX {
 
 
     getSelectedLanguage() {
+        if (!this.me) return "English";
         return this.language[this.me.language];
     }
 
@@ -417,13 +426,27 @@ class VX {
         });
     }
 
+    getLanguages() {
+        let languages = [];
+        for (let [key, value] of Object.entries(vx.language ?? [])) {
+
+            languages.push({
+                name: value,
+                value: key
+            })
+        }
+        return languages;
+    }
+
 }
 
 let vx = new VX();
+console.log("vx created");
+window.vx = vx;
 
 export default {
 
-    install(app, options) {
+    async install(app, options) {
 
         //app.config.globalProperties.$http = _axios.create({});
         /*         Vue.prototype.$http = axios.create({
@@ -446,9 +469,7 @@ export default {
 }
 export { vx }
 
-export function getLanguages() {
-    return vx.language;
-}
+
 
 export async function setLanguage(language) {
     let { status } = await vx.post("/User/change-language", { language });
@@ -461,3 +482,36 @@ export function getCurrentLanguage() {
     return vx.getSelectedLanguage();
 }
 
+export function getInstance() {
+    return vx;
+}
+
+export function getUser() {
+    return vx.me;
+}
+
+export async function init() {
+    let config;
+    if (process.env.NODE_ENV == "development") {
+        config = {
+            endpoint: "http://localhost:8001/api/",
+        };
+    } else {
+        let base = document.querySelector("base").href;
+        config = {
+            endpoint: base + "api/",
+        };
+    }
+
+    let vx = getInstance();
+    await vx.init(config);
+
+    //load css
+    await vx.loadCSS();
+
+    //load js
+    await vx.loadJS();
+
+    document.title = vx.config.company ?? "vx";
+
+}
